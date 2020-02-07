@@ -1,0 +1,26 @@
+# no annoying audible bell, please
+vbell off
+
+# skip splash screen
+startup_message off
+
+# detach on hangup
+autodetach on
+
+defscrollback 10000
+
+altscreen on
+
+# make the shell in every window a login shell
+shell -$SHELL
+
+
+#Add bar at bottom with useful info
+#caption always "%{= kw}%-w%{= BW}%n %t%{-}%+w %-= @%H - %LD %d %LM - %c"
+#caption always "%?%F%{= kg}%:%{= kK}%?%02C%a %D %M %d) %L=%-Lw%50L>%{+b}*%n%f %t*%{-b}%+Lw%<"
+hardstatus alwayslastline "%{-b gk}%-w%{+b kg}%50>%n %t%{-b gk}%+w %=%C%<"
+#hardstatus string '%{= kG}[%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}] [ %D %m/%d %c ]'
+
+# Use ctrl-a to jump to start of line
+defescape "^Ww"
+escape "^Ww"
