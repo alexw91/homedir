@@ -25,6 +25,7 @@ export GIT_AUTHOR_NAME="Alex Weibel"
 git config --global alias.undo-commit 'reset --soft HEAD^' #"git undo-commit" will now undo the last commit and leave files intact
 git config --global color.ui true
 git config --global core.pager 'less -R'
+git config --global core.editor "vim"
 
 # One Character Shortcuts
 alias c="clear"
