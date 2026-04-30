@@ -1,0 +1,2 @@
+bind generic <Up> move-up
+bind generic <Down> move-down
