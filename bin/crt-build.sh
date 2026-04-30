@@ -27,6 +27,9 @@ make -j $(sysctl -n hw.ncpu) 2>&1 | tee build_make.txt
 ctest --output-on-failure -j$(sysctl -n hw.ncpu) | tee build_test.txt
 make install -j $(sysctl -n hw.ncpu)
 
+# Print list of slowest tests
+grep -Eo "s2n_.*" build_test.txt | grep Passed | sort -g -t ' ' -k 6 | tail -15
+
 # Auto-format any locally modified .c and .h files
 #git diff --name-only --diff-filter=M HEAD | grep -E '\.[ch]$' | xargs -r clang-format -i
 
