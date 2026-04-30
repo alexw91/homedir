@@ -13,13 +13,22 @@ rm -rf build
 mkdir -p build
 cd build
 
+export CMAKE_CXX_FLAGS="-fdiagnostics-color=always"
+export CMAKE_C_FLAGS="-fdiagnostics-color=always"
+export CMAKE_COLOR_MAKEFILE=1
+export CTEST_OUTPUT_ON_FAILURE=1
+
 export SDK_INSTALL_DIR=${HOME}/workspace/aws-sdks/local-c-install
-cmake -DCMAKE_PREFIX_PATH=${SDK_INSTALL_DIR} -DCMAKE_INSTALL_PREFIX=${SDK_INSTALL_DIR} -DBUILD_SHARED_LIBS=ON -DBUILD_DEPS=OFF -DCMAKE_BUILD_TYPE=Debug ../
+mkdir -p ${SDK_INSTALL_DIR}
 
-make -j 32
-make test
-make install
+cmake -DCMAKE_PREFIX_PATH=${SDK_INSTALL_DIR} -DCMAKE_INSTALL_PREFIX=${SDK_INSTALL_DIR} -DBUILD_SHARED_LIBS=ON -DBUILD_DEPS=OFF -DCMAKE_BUILD_TYPE=RelWithDebInfo ../
 
+make -j $(sysctl -n hw.ncpu) 2>&1 | tee build_make.txt
+ctest --output-on-failure -j$(sysctl -n hw.ncpu) | tee build_test.txt
+make install -j $(sysctl -n hw.ncpu)
+
+# Auto-format any locally modified .c and .h files
+#git diff --name-only --diff-filter=M HEAD | grep -E '\.[ch]$' | xargs -r clang-format -i
 
 RED='\033[1;31m'
 GREEN='\033[1;32m'
