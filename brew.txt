@@ -1,0 +1,31 @@
+$ brew list
+==> Formulae
+ada-url                 flamegraph              highway                 libmicrohttpd           libuv                   nettle                  rpds-py                 uvwasi
+aom                     fmt                     icu4c@78                libnghttp2              libvidstab              ninja                   rubberband              vulkan-headers
+aribb24                 fontconfig              imath                   libnghttp3              libvmaf                 ninja-dev-sync          rustup                  vulkan-loader
+ast-grep                freetype                jasper                  libngtcp2               libvorbis               node                    sdl2                    wdiff
+bat                     frei0r                  jenv                    libogg                  libvpx                  oniguruma               semgrep                 webp
+broot                   fribidi                 jnv                     libomp                  libx11                  opencore-amr            shaderc                 wget
+brotli                  fswatch                 jpeg-turbo              liboqs                  libxau                  openexr                 simdjson                whisper-cpp
+c-ares                  gd                      jpeg-xl                 libplacebo              libxcb                  openjdk                 snappy                  wireshark
+ca-certificates         gdk-pixbuf              jq                      libpng                  libxdmcp                openjdk@17              speex                   x264
+cairo                   gettext                 lame                    librist                 libxext                 openjpeg                speexdsp                x265
+certifi                 ggml                    lcov                    librsvg                 libxrender              openjph                 spotbugs                xorgproto
+cffi                    gh                      leptonica               libsamplerate           little-cms2             openssl@3               sqlite                  xvid
+cjson                   giflib                  libarchive              libsmi                  llhttp                  opus                    srt                     xz
+clang-format            git-lfs                 libass                  libsndfile              llvm                    p11-kit                 sshfs-mac               yarn
+cloc                    glib                    libavif                 libsodium               lua                     pandoc                  svt-av1                 z3
+cmake                   gmp                     libb2                   libsoxr                 lz4                     pango                   tcl-tk                  zeromq
+colordiff               gnu-indent              libbluray               libssh                  lzo                     pcre2                   tesseract               zimg
+coreutils               gnutls                  libdatrie               libssh2                 m4                      pipx                    theora                  zlib
+cppcheck                go                      libdeflate              libtasn1                maven                   pixman                  tig                     zstd
+cryptography            gradle                  libev                   libthai                 mbedtls@3               pkgconf                 tinyxml2
+datamash                gradle-completion       libevent                libtiff                 mise                    pycparser               tkdiff
+dav1d                   graphite2               libgcrypt               libtommath              mpdecimal               pydantic                tree
+dwarfutils              graphviz                libgit2                 libtool                 mpg123                  python@3.13             tree-sitter
+ffmpeg                  gts                     libgpg-error            libudfread              ncdu                    python@3.14             unbound
+ffmpeg-full             harfbuzz                libidn2                 libunibreak             ncurses                 rav1e                   unison
+flac                    hdrhistogram_c          libmaxminddb            libunistring            netpbm                  readline                usage
+
+==> Casks
+codeql                  db-browser-for-sqlite   ghostty                 itsycal                 macfuse                 meld                    stats

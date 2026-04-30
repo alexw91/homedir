@@ -1,8 +1,10 @@
 # Personal Improvements to default zsh shell environment
 
+autoload -U colors && colors
+
 # Set up zsh prompt to be username@hostname$
 setopt PROMPT_SUBST
-export PROMPT='%n@%m$ '
+export PROMPT='%F{046}%K{000}macbook:${PWD/#$HOME/~}$%F{reset_color} '
 export RPROMPT='%(?..[%?] )'
 
 # Set up autocomplete
@@ -14,6 +16,7 @@ setopt COMPLETE_IN_WORD
 
 # Add a few default directories to PATH
 export PATH=$PATH:/sbin:~/bin:~/.local/bin/:~/.cabal/bin:~/.cargo/bin/:
+export SCREENDIR=$HOME/.screen
 
 # Add default git info
 export GIT_COMMITTER_EMAIL="alexw91@gmail.com"
@@ -26,6 +29,11 @@ git config --global alias.undo-commit 'reset --soft HEAD^' #"git undo-commit" wi
 git config --global color.ui true
 git config --global core.pager 'less -R'
 git config --global core.editor "vim"
+git config --global fetch.recurseSubmodules  true
+git config --global submodule.recurse true
+git config --global checkout.defaultRemote origin
+git config --global diff.context 10
+git config --global alias.df 'diff --function-context'
 
 # One Character Shortcuts
 alias c="clear"
@@ -40,7 +48,7 @@ alias ls="ls --color"
 alias ll="ls -la"
 alias llr="tree -fi"
 alias less="less -R"
-alias grep="grep --line-buffered"
+alias grep="grep --line-buffered --color"
 alias symlink="ln -s"
 alias printdate="date +\"%c\""
 
@@ -55,6 +63,10 @@ alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 
+function git-grep() {
+    git log -S "$1" --source --all
+}
+
 # git aliases
 alias rebase="git rebase -i"
 alias pull="git pull --rebase"
@@ -62,6 +74,9 @@ alias show="git show"
 alias gits="pwd && git status"
 alias gd="git diff"
 alias gdc="git diff --cached"
+alias gca="git commit --amend"
+alias gg="git-grep"
+
 
 # Grep Colors
 alias grey-grep="GREP_COLOR='1;30' grep --color=always"
@@ -80,6 +95,11 @@ function green-highlight () { green-grep -E "$1|$" "$@";}
 # Calculator
 function calc() {
     echo "$@" | bc --mathlib;
+}
+
+function findreplace () {
+  #findreplace stringToFind strintToReplaceItWith directoryPath
+	sed -i -- "/s/$1/$2/g" $3;
 }
 
 # Git Recursive Checkout
@@ -104,6 +124,11 @@ function git_undo_last_commit() {
 function git_overwrite() {
 	git fetch;
 	git checkout HEAD -- "$1";
+}
+
+function git_drop_local_changes {
+    git stash
+    git stash drop
 }
 
 # Always print current directory name and files in current directory after every cd command
