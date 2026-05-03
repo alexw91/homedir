@@ -20,7 +20,7 @@ mkdir -p ${SDK_INSTALL_DIR}
 # Ninja
 cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_INSTALL_PREFIX=${SDK_INSTALL_DIR} -DCMAKE_VERBOSE_MAKEFILE=1 ../
 
-ninja run_tests | GREP_COLOR='1;31' grep --color=always -E "^.*Failure$|$"
+ninja run_tests | GREP_COLOR='1;31' grep --color=always -E "^.*Failure$|$" | tee ninja_test_output.log
 rm ../awslcTestTmpFile*
 
 ninja install
