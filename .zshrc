@@ -24,16 +24,20 @@ export GIT_AUTHOR_EMAIL="alexw91@gmail.com"
 export GIT_COMMITTER_NAME="Alex Weibel"
 export GIT_AUTHOR_NAME="Alex Weibel"
 
+go env -w GOPROXY=direct
+
 # Git Config
 git config --global alias.undo-commit 'reset --soft HEAD^' #"git undo-commit" will now undo the last commit and leave files intact
 git config --global color.ui true
 git config --global core.pager 'less -R'
 git config --global core.editor "vim"
+git config --global core.excludesfile ~/.gitignore
 git config --global fetch.recurseSubmodules  true
 git config --global submodule.recurse true
 git config --global checkout.defaultRemote origin
 git config --global diff.context 10
 git config --global alias.df 'diff --function-context'
+git config --global pull.rebase true
 
 # One Character Shortcuts
 alias c="clear"
@@ -51,6 +55,8 @@ alias less="less -R"
 alias grep="grep --line-buffered --color"
 alias symlink="ln -s"
 alias printdate="date +\"%c\""
+alias python=python3
+alias pip=pip3
 
 # Typos
 alias gti="git"
@@ -131,9 +137,17 @@ function git_drop_local_changes {
     git stash drop
 }
 
+function git_ignore() {
+	git update-index --assume-unchanged "$@"
+}
+
 # Always print current directory name and files in current directory after every cd command
 function cd () {
-	builtin cd "$@" && pwd && ls
+    builtin cd "$@" || return
+    if [[ "$HUMAN" == "1" ]]; then
+        pwd
+        ls
+    fi
 }
 
 # Set up zsh history
