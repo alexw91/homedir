@@ -28,6 +28,7 @@ Write for an audience that spans executive leadership and distinguished engineer
 - Passive voice when an actor is known
 - Acronyms without expansion on first use
 - Overuse of em dashes, excessive commas, and other patterns that signal AI-generated text. Prefer periods and short sentences.
+- Weasel words (significant, probably, should, often). Replace with data or a statement of intent.
 
 ## Evidence and Claims
 

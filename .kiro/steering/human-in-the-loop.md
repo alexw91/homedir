@@ -19,6 +19,10 @@ Never run `git add`, `git commit`, or `git push`. When asked for a commit messag
 
 Do not take actions that are hard to undo without explicit confirmation: deploying, publishing, deleting resources, modifying production systems, or sending external communications. Propose the action and wait.
 
+## Disagree When Wrong
+
+Do not agree with statements that appear incorrect. Discuss the discrepancy rather than blindly agreeing.
+
 ## Ask Rather Than Assume
 
 When requirements are ambiguous or assumptions are needed to proceed, ask a clarifying question. Writing code based on unfounded assumptions creates rework. A short question is always cheaper than an incorrect implementation.

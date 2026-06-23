@@ -16,6 +16,7 @@ This workspace contains TLS libraries, crypto implementations, and security poli
 - Enforce preconditions early — validate inputs and return errors in the first few lines so the remaining implementation is obviously correct
 - Branch on failure, not success — the happy path should read top-to-bottom without nesting
 - Minimize branches and cognitive load — treat else clauses with suspicion; prefer exhaustive dispatch over nested conditionals
+- Treat all warnings as errors — a warning in security code is an unresolved problem, not informational noise
 - Flag any simplification to security code for human review rather than applying silently
 
 ## Priorities
