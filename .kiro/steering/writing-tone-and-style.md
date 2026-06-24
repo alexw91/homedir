@@ -19,6 +19,7 @@ Write for an audience that spans non-technical executive leadership to extremely
 - Distinguish observation from inference. "The p99 spiked at 14:32" is a fact. "The deploy caused it" is a hypothesis. Write so the reader can tell which is which without asking.
 - Lead with what you need from the reader. A decision, an approval, or a specific action. Context follows.
 - Every paragraph must advance the reader toward that outcome. If a section doesn't serve the ask, cut it.
+- Be kind. Earn trust. Critique actions, not character. "This PR lacks error handling" invites a fix. "This engineer is sloppy" damages trust.
 
 ## Structure
 
