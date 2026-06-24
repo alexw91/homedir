@@ -18,6 +18,8 @@ Implement only what the current task requires. Before writing code, stop at the 
 
 No abstractions without a second consumer. No boilerplate "for later." No new dependency if existing tools cover it. Mark intentional simplifications with a comment naming the ceiling and upgrade path.
 
+Don't solve problems you don't have yet. Code for today's requirements. If a future need arises, refactor then — it's cheaper than maintaining speculative abstractions now.
+
 ## Quality
 
 - Be clear, simple, and boring. Don't be clever. Clever code is what someone decodes at 3am.

@@ -5,7 +5,7 @@ inclusion: always
 
 # Security-Sensitive Code
 
-This workspace contains TLS libraries, crypto implementations, and security policy engines. Security correctness trumps brevity.
+Apply these rules to all code. They are non-negotiable in cryptography, protocol implementations, and security-critical paths.
 
 ## Rules
 
@@ -18,6 +18,11 @@ This workspace contains TLS libraries, crypto implementations, and security poli
 - Minimize branches and cognitive load — treat else clauses with suspicion; prefer exhaustive dispatch over nested conditionals
 - Treat all warnings as errors — a warning in security code is an unresolved problem, not informational noise
 - Flag any simplification to security code for human review rather than applying silently
+- Make invalid states unrepresentable — use the type system to ensure illegal combinations cannot be constructed, not just detected at runtime
+- Encode invariants in types, not comments — prefer enums over strings, newtypes over primitives, and sealed hierarchies over open interfaces. A bug the compiler rejects is a bug that never ships.
+- Push validation as early as possible in the pipeline: type system > compile time > startup > request time > deep in the call stack. The earlier an invalid state is rejected, the smaller the attack surface.
+- Make wrong code look wrong — use naming conventions to surface semantic hazards (byte order, trust boundaries, validation state) so misuse is visible in a single line
+- Back every convention with a build-time check. A convention without enforcement is a suggestion that decays.
 
 ## Priorities
 

@@ -26,3 +26,15 @@ Do not agree with statements that appear incorrect. Discuss the discrepancy rath
 ## Ask Rather Than Assume
 
 When requirements are ambiguous or assumptions are needed to proceed, ask a clarifying question. Writing code based on unfounded assumptions creates rework. A short question is always cheaper than an incorrect implementation.
+
+## Recommend, Don't Just Ask
+
+When asking a question, include your recommendation. "Should we use a queue here? I'd suggest SQS because X" is more useful than "Should we use a queue here?" The human can accept, reject, or refine a proposal faster than they can generate one from scratch.
+
+## One Question at a Time
+
+One question at a time. When decisions depend on each other, resolve them in order. Don't ask B until A is settled. Compound questions produce confused answers.
+
+## Do the Homework First
+
+Do the homework first. If the answer is in the codebase, documentation, or command output, look it up before asking the human. Reserve questions for decisions only the human can make.

@@ -5,7 +5,7 @@ inclusion: always
 
 # Writing Tone and Style
 
-Write for an audience that spans executive leadership and distinguished engineers. Both should find the document clear on first read — executives without needing implementation details, engineers without feeling talked down to.
+Write for an audience that spans non-technical executive leadership to extremely technical distinguished engineers. Both should find the document clear on first read — executives without needing implementation details, engineers without feeling talked down to.
 
 ## Principles
 
@@ -14,6 +14,11 @@ Write for an audience that spans executive leadership and distinguished engineer
 - Direct and factual. No hedging, no filler, no corporate euphemisms.
 - No marketing language. No "leveraging synergies" or "best-in-class solutions."
 - Short sentences. Short paragraphs. White space is your friend.
+- One idea per sentence. One topic per paragraph. If a sentence makes two claims, split it.
+- Be specific. Name the component, quote the metric, cite the line. "Improved performance" is not a claim — "reduced `parseHeader` p50 from 120µs to 90µs" is.
+- Distinguish observation from inference. "The p99 spiked at 14:32" is a fact. "The deploy caused it" is a hypothesis. Write so the reader can tell which is which without asking.
+- Lead with what you need from the reader. A decision, an approval, or a specific action. Context follows.
+- Every paragraph must advance the reader toward that outcome. If a section doesn't serve the ask, cut it.
 
 ## Structure
 
