@@ -29,3 +29,7 @@ Don't solve problems you don't have yet. Code for today's requirements. If a fut
 - Optimize for reviewability. Every line in the diff should advance the task. No unrelated changes.
 - Be idiomatic. Match the language's conventions and the codebase's existing style.
 - Be thorough. Short does not mean incomplete. Handle edge cases, validate inputs, and ensure correctness. The goal is the fewest lines that are fully correct, not the fewest lines at the expense of correctness.
+
+## Related
+
+See also: `think-plan-act.md` (execution loop, diff discipline), `security-sensitive-code.md` (scope exceptions to minimalism)

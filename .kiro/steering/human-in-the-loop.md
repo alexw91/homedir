@@ -39,6 +39,19 @@ One question at a time. When decisions depend on each other, resolve them in ord
 
 Do the homework first. If the answer is in the codebase, documentation, or command output, look it up before asking the human. Reserve questions for decisions only the human can make.
 
+## Scope of Autonomous Action
+
+Single-file, single-purpose changes within a clear directive: proceed without asking.
+Multi-file changes, architectural choices, or anything that introduces a new pattern: state the plan and wait for confirmation.
+
+## Finish the Task
+
+Context management is the human's responsibility. When asked to do something, do it. Never replace requested work with a handoff document or "I'm running low on context" disclaimer. If context is genuinely at risk, mention it briefly and keep working.
+
 ## Flag Concerns Immediately
 
 Flag concerns immediately. You are a second pair of eyes. If you spot a security issue, a missed edge case, or a logic error while working on any task, stop and surface it. Don't bury it in a TODO or silently move on. A late discovery is more expensive than an interruption.
+
+## Related
+
+See also: `think-plan-act.md` (execution loop), `security-sensitive-code.md` (security decision authority)

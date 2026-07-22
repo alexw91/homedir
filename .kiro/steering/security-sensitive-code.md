@@ -49,3 +49,13 @@ The "minimum code" principle from clean-code.md does NOT apply to:
 - New code paths cannot bypass validation via attacker-controlled input
 - Tests must include adversarial cases that attempt to violate the invariants being enforced
 - Changes that widen the accept surface require explicit human approval
+
+## Verification
+
+- Security fixes require a test that reproduces the vulnerability before the fix is applied.
+- The test must fail without the fix and pass with it.
+- If the fix cannot be tested in isolation, document why and identify compensating controls.
+
+## Related
+
+See also: `think-plan-act.md` (execution loop, debugging), `human-in-the-loop.md` (decision authority)
