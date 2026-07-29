@@ -69,6 +69,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - If the requirements are ambiguous, note the ambiguity rather than asserting a violation.
 - Scope creep is informational, not blocking — flag it but don't mark it FIX REQUIRED unless it introduces risk.
 - If the requirements contain "nice to have" or "stretch goal" items, don't flag them as MISSING unless the diff claims to be complete.
+- The Findings Catalog is not exhaustive. If you identify a requirements concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `scope-creep (new):`, `undocumented-assumption (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 

@@ -69,6 +69,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - Do NOT flag TODO comments that are clearly intentional scope-limiting ("TODO(next-CR): add pagination") — these are communication to the reviewer, not WIP debris. Flag only TODOs that look like forgotten work.
 - Do NOT flag commit messages that reference the issue being solved (e.g., "Fixes #123") — these are standard CR metadata.
 - The test for every finding: "Would a fresh reviewer reading only this diff be confused by this, or would they go looking for something that doesn't exist here?"
+- The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `orphaned-test-fixture (new):`, `placeholder-value (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 

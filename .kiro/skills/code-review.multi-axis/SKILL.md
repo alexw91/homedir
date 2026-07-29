@@ -19,7 +19,7 @@ code-review.multi-axis [<axes>] [since <fixed-point>]
 - `code-review.multi-axis security since main` — run only the Security axis
 - `code-review.multi-axis security clean since v2.1.0` — run only the named axes
 
-Valid axis names: `style`, `requirements`, `security`, `clean`, `quality`, `solid`, `selfcontained`, `all`.
+Valid axis names: `style`, `requirements`, `security`, `clean`, `quality`, `architecture`, `performance`, `selfcontained`, `all`.
 
 When `all` is specified or no axes are named, run every axis. There is no skip logic in the orchestrator — every enabled axis always runs. Sub-agents handle "nothing to say" by returning `findings: 0 / verdict: SHIP`.
 
@@ -125,7 +125,8 @@ Sub-agent skill files by axis:
 - `security/SECURITY-CODE-REVIEW.md`
 - `clean/CLEAN-CODE-REVIEW.md`
 - `quality/QUALITY-REVIEW.md`
-- `solid/SOLID-REVIEW.md`
+- `architecture/ARCHITECTURE-REVIEW.md`
+- `performance/PERFORMANCE-REVIEW.md`
 - `selfcontained/SELF-CONTAINED-REVIEW.md`
 
 All sub-agents MUST return output conforming to `OUTPUT-CONTRACT.md`.
@@ -171,7 +172,7 @@ requirements-review: Passed. 0 findings.
 
 **Axes with no findings:** render as `<axis>-review: Passed. 0 findings.`
 
-Do NOT merge or rerank findings across axes. Do NOT deduplicate — they represent different lenses on the same code.
+Do NOT merge or rerank findings across axes. Do NOT deduplicate — they represent different lenses on the same code. Multiple axes flagging the same line is a stronger signal, not redundancy.
 
 After the findings index and verdict, include the full per-axis reports verbatim from the sub-agents under collapsible sections.
 

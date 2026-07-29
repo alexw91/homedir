@@ -74,6 +74,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
   - Protocol conformance steps that prevent future misuse
   - Exhaustive switch/enum handling
 - Aim for one-line-per-finding brevity, but expand if a shrink suggestion requires showing the replacement code or if the reasoning for a `no-gate:` tag is non-obvious.
+- The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `accidental-export (new):`, `stale-import (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 

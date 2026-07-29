@@ -83,6 +83,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - If no explicit conventions docs were provided, sample 2-3 existing files in the same directory as the changed files to establish the local conventions.
 - Do NOT flag subjective style preferences with no documented basis.
 - Do NOT flag patterns that are consistent with the existing codebase even if they aren't "best practice" globally — the convention IS the codebase pattern.
+- The Findings Catalog is not exhaustive. If you identify a style concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `inconsistent-error-format (new):`, `mixed-quote-style (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 

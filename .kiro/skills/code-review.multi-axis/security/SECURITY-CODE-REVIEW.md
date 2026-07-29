@@ -119,6 +119,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - Severity hierarchy: Security > Readability > Correctness > Performance. Never recommend removing a security check for readability or performance.
 - For test code and internal utilities, still review thoroughly but assign lower confidence (4-6) to findings that depend on the code being reachable from an external attack surface.
 - Aim for one-line-per-finding brevity, but expand if the finding is genuinely complex and a one-liner would lose the attack path.
+- The Findings Catalog is not exhaustive. If you identify a security concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `timing-oracle (new):`, `privilege-escalation (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 

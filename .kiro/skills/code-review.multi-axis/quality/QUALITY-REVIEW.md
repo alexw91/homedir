@@ -82,6 +82,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - Every finding MUST include a concrete alternative — what the code *should* look like. "This feels wrong" is not a finding. "This should use X because Y" is.
 - Do NOT flag working code just because you'd write it differently if the difference is purely aesthetic. The threshold is: "would a senior engineer reviewing this PR ask for a change, or would they approve it?"
 - Do NOT repeat findings that Security or Clean would catch. If it's exploitable, Security owns it. If it's dead code, Clean owns it. Quality owns the middle ground: code that works, isn't exploitable, isn't dead, but isn't the *right way* to solve the problem.
+- The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `stale-cache (new):`, `race-condition (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 

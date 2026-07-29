@@ -81,6 +81,7 @@ Behavioral rules for the sub-agent:
 - [Rule about what to inspect.]
 - [Rule about what NOT to flag.]
 - Do NOT flag [things that belong to another axis].
+- The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `stale-cache (new):`, `blocking-main-thread (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 
