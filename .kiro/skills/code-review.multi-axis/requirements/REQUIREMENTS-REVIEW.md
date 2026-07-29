@@ -4,35 +4,41 @@ Review the diff for fidelity to the originating requirements — issue, PRD, or 
 
 NOTE: "Requirements" here means the feature requirements from an issue tracker, PRD, or task description. It does NOT mean protocol specifications (RFCs, NIST, FIPS). Protocol conformance belongs in the Security axis.
 
-## Inputs
+## Core Question
 
-You will receive:
-1. The diff content (pre-computed by the orchestrator)
-2. A requirements context package containing some or all of:
-   - `[HUMAN]` — the original raw user message(s) that initiated this work
-   - `[EXTERNAL: <url>]` — fetched content from issue trackers, PRDs, or tickets
-   - `[AGENT CONTEXT]` — summary of session decisions and clarifications
-   - `[ASSUMPTIONS — verify these]` — gaps the orchestrator identified
+**"Does the implementation match what was asked for — nothing missing, nothing contradicted, nothing unasked-for that introduces risk?"**
+
+## Input
+
+Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or inline diff, commit list, session context).
+
+You will also receive a requirements context package containing some or all of:
+- `[HUMAN]` — the original raw user message(s) that initiated this work
+- `[EXTERNAL: <url>]` — fetched content from issue trackers, PRDs, or tickets
+- `[AGENT CONTEXT]` — summary of session decisions and clarifications
+- `[ASSUMPTIONS — verify these]` — gaps the orchestrator identified
 
 Treat `[HUMAN]` and `[EXTERNAL]` blocks as authoritative requirements. Treat `[AGENT CONTEXT]` and `[ASSUMPTIONS]` as supplementary — useful for understanding intent but not binding requirements unless the human confirmed them.
 
-## Process
+**Local mode:** Read the requirements context, then inspect the diff using `git -P show <sha>` or `git -P diff HEAD`.
 
-1. Read the requirements. Identify the concrete requirements — what was asked for.
-2. Read the diff. Identify what was implemented.
-3. Compare. Report three categories of findings.
+**Remote mode:** The diff and requirements context are provided inline in your prompt.
 
-## Finding Categories
+## Findings Catalog
 
-**MISSING** — A requirement that is not implemented (or only partially implemented) in the diff.
+1. `MISSING:` - **Is a stated requirement absent from the implementation?** A requirement that is not implemented (or only partially implemented) in the diff. Quote or paraphrase the specific requirement. If the requirements contain "nice to have" or "stretch goal" items, don't flag them unless the diff claims to be complete. Verdict ≥ 8: `FIX REQUIRED`.
 
-**SCOPE CREEP** — Behavior in the diff that the requirements did not ask for. This is not always bad (defensive error handling, necessary refactoring to enable the feature), but it should be noted.
+2. `WRONG:` - **Does the implementation contradict what was asked?** A requirement that looks implemented but where the implementation appears to contradict what was asked for. The code does the opposite of, or something materially different from, what the requirement states. Verdict ≥ 8: `FIX REQUIRED`.
 
-**WRONG** — A requirement that looks implemented but where the implementation appears to contradict what was asked for.
+3. `AMBIGUOUS:` - **Is the requirement unclear enough that correctness can't be determined?** The requirements are ambiguous and the implementation chose one interpretation, but a reasonable person could read the requirement differently. Note the ambiguity rather than asserting a violation. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
-## Format
+4. `SCOPE CREEP:` - **Is there behavior the requirements didn't ask for?** Behavior in the diff that the requirements did not ask for. This is not always bad (defensive error handling, necessary refactoring to enable the feature), but it should be noted so the reviewer can assess whether the extra work is appropriate or introduces risk. Never drives `FIX REQUIRED` on its own. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
-One line per finding with confidence score:
+## Output Format
+
+Follow `OUTPUT-CONTRACT.md` exactly.
+
+Finding line format for this axis:
 
 ```
 [<confidence 1-10>] <category>: <requirement summary>. Cite: <requirements line or section>.
@@ -45,18 +51,7 @@ For complex findings:
   Detail: <explanation of the gap between requirements and implementation>
 ```
 
-## Rules
-
-- Quote or paraphrase the specific requirement for each finding. Don't make vague claims.
-- If the requirements are ambiguous, note the ambiguity rather than asserting a violation.
-- Scope creep is informational, not blocking — flag it but don't mark it FIX REQUIRED unless it introduces risk.
-- If the requirements contain "nice to have" or "stretch goal" items, don't flag them as MISSING unless the diff claims to be complete.
-
-## Verdict
-
-Follow `OUTPUT-CONTRACT.md` exactly.
-
-**Confidence calibration (Requirements axis):**
+## Confidence Calibration (Requirements axis)
 
 See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 
@@ -68,6 +63,14 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - **2-3:** Speculative — requirement might be satisfied by code outside the diff that wasn't provided.
 - **1:** Barely related to the stated requirements. Reporting for completeness only.
 
-MISSING or WRONG findings scoring ≥ 8 drive `verdict: FIX REQUIRED`.
-Ambiguous findings scoring ≥ 8 drive `verdict: NEEDS DISCUSSION`.
-SCOPE CREEP findings never drive FIX REQUIRED on their own.
+## Rules
+
+- Quote or paraphrase the specific requirement for each finding. Don't make vague claims.
+- If the requirements are ambiguous, note the ambiguity rather than asserting a violation.
+- Scope creep is informational, not blocking — flag it but don't mark it FIX REQUIRED unless it introduces risk.
+- If the requirements contain "nice to have" or "stretch goal" items, don't flag them as MISSING unless the diff claims to be complete.
+
+## Boundaries
+
+- **vs Security:** Protocol specifications (RFCs, NIST, FIPS) belong in the Security axis, not here. This axis covers feature requirements from issue trackers, PRDs, or task descriptions.
+- **vs Quality:** If the code implements the requirement but in a poor way, that's Quality. If the code doesn't implement the requirement at all, that's Requirements.
