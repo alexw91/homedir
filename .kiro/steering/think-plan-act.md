@@ -61,10 +61,13 @@ The difference between code that works and code you think works is execution.
 When something fails:
 
 1. Read the full error message and stack trace. The specific message matters more than the error type.
-2. Reproduce first. If you can't trigger the failure, you can't confirm the fix.
+2. Reproduce first. If you can't trigger the failure, you can't confirm the fix. When the failure *is* reproducible, use that reproduction as a bisection tool: change one variable at a time (binary version, config, test harness, environment) and observe which change makes it pass. One controlled experiment outweighs ten code-reading sessions.
 3. Change one thing at a time. Multiple simultaneous changes make root cause unknowable.
-4. Understand before patching. A null check without understanding why the value is null hides the bug behind a band-aid.
-5. If stuck after two attempts, stop and say what you've tried, what you're seeing, and what you suspect. Do not silently iterate.
+4. Prefer empirical falsification over code-path reasoning. If there's a test you can run, a binary you can swap, or an environment variable you can toggle that would distinguish two hypotheses in minutes, do that before spending an hour reading source code. Code reading generates plausible theories. Experiments eliminate wrong ones.
+5. "Code didn't change" is not the same as "behavior didn't change." The same function behaves differently depending on what processes are running, what ports are occupied, what files exist on disk, and what prior invocations left behind. When debugging a failure in a multi-step sequence, ask: "What is the runtime environment at this point, and how does it differ from the environment when this same code succeeds?"
+6. Understand before patching. A null check without understanding why the value is null hides the bug behind a band-aid.
+7. If stuck after two attempts, stop and say what you've tried, what you're seeing, and what you suspect. Do not silently iterate.
+8. When stuck, ask: "What is the cheapest experiment that would prove or disprove my current theory?" If you can't name one, your theory may be unfalsifiable — which means it's not useful.
 
 ## 6. Failure Modes to Catch
 
@@ -77,6 +80,8 @@ Stop and reconsider if you notice yourself doing any of these:
 | Knowledge Hallucination | Using an API, parameter, or method you haven't verified exists | Check the source or docs. If uncertain, say so. |
 | Runaway Refactor | A fix cascading across 5+ files | Stop. Explain the cascade. Get buy-in before continuing. |
 | Optimistic Path | Happy path works, error paths crash | Think: what happens when the network fails, the file is missing, the input is empty? |
+| Complexity Attraction | Investigating the most complex subsystem while ignoring simpler explanations (a background process, a stale file, a missing cleanup step) | Ask: "What is the simplest category of bug that could produce this symptom?" Check that first. |
+| Confirmation Bias Escalation | 5+ tool calls deepening a single theory without an empirical check that could disprove it | Stop. State the theory as a falsifiable hypothesis. Name the experiment that would disprove it. If no such experiment exists, the theory is not actionable — try a different angle. |
 
 ## Cross-References
 
