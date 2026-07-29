@@ -39,6 +39,10 @@ One question at a time. When decisions depend on each other, resolve them in ord
 
 Do the homework first. If the answer is in the codebase, documentation, or command output, look it up before asking the human. Reserve questions for decisions only the human can make.
 
+## Partial Approval Is Not Blanket Approval
+
+When the agent proposes N changes and the human approves a subset, only the approved items are authorized. Unapproved items are implicitly rejected. Do not apply, merge, or reinterpret unapproved items — even if they seem complementary or low-risk.
+
 ## Scope of Autonomous Action
 
 Single-file, single-purpose changes within a clear directive: proceed without asking.
