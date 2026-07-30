@@ -1,6 +1,6 @@
 ---
 name: code-review.multi-axis
-description: Multi-axis code review to find issues across coding style, requirements adherence, security review, code minimality, and software engineering quality dimensions. Use when user says "review since", "code-review.multi-axis", "code review", "pre-CR check", or wants feedback on changes before submitting.
+description: Multi-axis code review to find issues across coding style, requirements adherence, security review, code minimality, software engineering quality, architecture, performance, test quality, backwards compatibility, and readiness for human review. Use when user says "review since", "code-review.multi-axis", "code review", "pre-CR check", or wants feedback on changes before submitting.
 ---
 
 # Multi-Axis Code Review
