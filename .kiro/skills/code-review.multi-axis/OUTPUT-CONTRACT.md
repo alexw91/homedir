@@ -66,7 +66,7 @@ Each axis uses its own finding line format, but ALL findings MUST start with `[<
 [8] src/auth.ts:L38. Bare `any` type on `decoded` variable. Cite: .kiro/steering/clean-code.md.
 ```
 
-**Clean:**
+**Minimal:**
 ```
 [9] src/auth.ts:L10: stale-doc. Docstring says "returns 403" but code returns 401. → Update docstring.
 ```

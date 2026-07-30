@@ -26,6 +26,8 @@ Treat `[HUMAN]` and `[EXTERNAL]` blocks as authoritative requirements. Treat `[A
 
 ## Findings Catalog
 
+The Findings Catalog is not exhaustive. If you identify a requirements concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `scope-creep (new):`, `undocumented-assumption (new):`). The same output format, confidence scoring, and verdict rules apply.
+
 1. `MISSING:` - **Is a stated requirement absent from the implementation?** A requirement that is not implemented (or only partially implemented) in the diff. Quote or paraphrase the specific requirement. If the requirements contain "nice to have" or "stretch goal" items, don't flag them unless the diff claims to be complete. Verdict ≥ 8: `FIX REQUIRED`.
 
 2. `WRONG:` - **Does the implementation contradict what was asked?** A requirement that looks implemented but where the implementation appears to contradict what was asked for. The code does the opposite of, or something materially different from, what the requirement states. Verdict ≥ 8: `FIX REQUIRED`.
@@ -69,7 +71,6 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - If the requirements are ambiguous, note the ambiguity rather than asserting a violation.
 - Scope creep is informational, not blocking — flag it but don't mark it FIX REQUIRED unless it introduces risk.
 - If the requirements contain "nice to have" or "stretch goal" items, don't flag them as MISSING unless the diff claims to be complete.
-- The Findings Catalog is not exhaustive. If you identify a requirements concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `scope-creep (new):`, `undocumented-assumption (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 

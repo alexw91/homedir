@@ -1,6 +1,6 @@
 ---
 name: code-review.multi-axis
-description: Multi-axis code review to find issues across coding style, requirements adherence, security review, code cleanliness, and software engineering quality dimensions. Use when user says "review since", "code-review.multi-axis", "code review", "pre-CR check", or wants feedback on changes before submitting.
+description: Multi-axis code review to find issues across coding style, requirements adherence, security review, code minimality, and software engineering quality dimensions. Use when user says "review since", "code-review.multi-axis", "code review", "pre-CR check", or wants feedback on changes before submitting.
 ---
 
 # Multi-Axis Code Review
@@ -17,9 +17,9 @@ code-review.multi-axis [<axes>] [since <fixed-point>]
 - `code-review.multi-axis since main` — explicit fixed point
 - `code-review.multi-axis all since HEAD~3` — force every axis with explicit range
 - `code-review.multi-axis security since main` — run only the Security axis
-- `code-review.multi-axis security clean since v2.1.0` — run only the named axes
+- `code-review.multi-axis security minimal since v2.1.0` — run only the named axes
 
-Valid axis names: `style`, `requirements`, `security`, `clean`, `quality`, `architecture`, `performance`, `selfcontained`, `all`.
+Valid axis names: `style`, `requirements`, `security`, `minimal`, `quality`, `architecture`, `performance`, `test-quality`, `backwards-compatible`, `ready-for-human-review`, `all`.
 
 When `all` is specified or no axes are named, run every axis. There is no skip logic in the orchestrator — every enabled axis always runs. Sub-agents handle "nothing to say" by returning `findings: 0 / verdict: SHIP`.
 
@@ -123,11 +123,13 @@ Sub-agent skill files by axis:
 - `style/STYLE-REVIEW.md`
 - `requirements/REQUIREMENTS-REVIEW.md`
 - `security/SECURITY-CODE-REVIEW.md`
-- `clean/CLEAN-CODE-REVIEW.md`
+- `minimal/MINIMAL-REVIEW.md`
 - `quality/QUALITY-REVIEW.md`
 - `architecture/ARCHITECTURE-REVIEW.md`
 - `performance/PERFORMANCE-REVIEW.md`
-- `selfcontained/SELF-CONTAINED-REVIEW.md`
+- `test-quality/TEST-QUALITY-REVIEW.md`
+- `backwards-compatible/BACKWARDS-COMPATIBLE-REVIEW.md`
+- `ready-for-human-review/READY-FOR-HUMAN-REVIEW.md`
 
 All sub-agents MUST return output conforming to `OUTPUT-CONTRACT.md`.
 
@@ -145,19 +147,21 @@ All sub-agents MUST return output conforming to `OUTPUT-CONTRACT.md`.
 ### Findings
 
 1. [SECURITY 9/10] FAIL: <checklist item>. <one-line summary>. → <suggested fix>.
-2. [CLEAN 8/10] <tag>: <file>:L<line>. <what>. <replacement>.
+2. [MINIMAL 8/10] <tag>: <file>:L<line>. <what>. <replacement>.
 3. [STYLE 9/10] <file>:L<line>. <violation>. Cite: <convention source>.
-4. [SELFCONTAINED 9/10] <file>:L<line>. <tag>: <what>. → <fix>.
+4. [READY-FOR-HUMAN-REVIEW 9/10] <file>:L<line>. <tag>: <what>. → <fix>.
 
 ### Warnings (confidence < 8)
 
 5. [SECURITY 5/10] <checklist item>. <speculative concern>. → <suggestion>.
-6. [CLEAN 6/10] <tag>: <file>:L<line>. <what>. <replacement>.
+6. [MINIMAL 6/10] <tag>: <file>:L<line>. <what>. <replacement>.
 
 ### Verdict: <SHIP|FIX REQUIRED|NEEDS DISCUSSION> (<count per axis>)
 
 style-review: Passed. 0 findings.
 requirements-review: Passed. 0 findings.
+
+Top priorities: #1, #3.
 ```
 
 **Confidence scoring:**
@@ -173,6 +177,8 @@ requirements-review: Passed. 0 findings.
 **Axes with no findings:** render as `<axis>-review: Passed. 0 findings.`
 
 Do NOT merge or rerank findings across axes. Do NOT deduplicate — they represent different lenses on the same code. Multiple axes flagging the same line is a stronger signal, not redundancy.
+
+**Numbering rule:** All numbered items in the report share a single continuous sequence starting at 1. The Findings section, Warnings section, and any summary or priority list after the verdict MUST continue the same numbering — never restart at 1. This ensures the user can say "fix #3" unambiguously. If a post-verdict summary references findings, use the same numbers assigned in the Findings/Warnings sections above (e.g., "Top priorities: #1, #4, #2").
 
 After the findings index and verdict, include the full per-axis reports verbatim from the sub-agents under collapsible sections.
 

@@ -1,4 +1,4 @@
-# Self-Contained Review (Sub-skill)
+# Ready for Human Review (Sub-skill)
 
 Review the changeset as if you are a fresh human reviewer opening a code review. You can see only what's in the diff. Every reference in the code — every name, comment, path, and commit message — should either resolve to something within the diff, something in the codebase at HEAD, or a well-known external concept. Anything else is a dangling reference that will send the reviewer on a wild goose chase.
 
@@ -16,6 +16,8 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 ## Findings Catalog
 
+The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `orphaned-test-fixture (new):`, `placeholder-value (new):`). The same output format, confidence scoring, and verdict rules apply.
+
 1. `abandoned-ref:` - **Does this reference something from the development process that isn't in the final changeset?** Comments that reference approaches not taken ("Replaced from X", "Previously tried Y", "Unlike the old approach…"). These are diary entries for the author, not documentation for the reader. The final code should stand alone without explaining its own development history. Remove it. Verdict ≥ 8: `FIX REQUIRED`.
 
 2. `wip:` - **Is this unfinished work?** TODO/FIXME markers, `console.log`/`printf` debug statements, commented-out code from earlier experiments, placeholder implementations (functions that return hardcoded values with a note to "implement later"). These signal the work isn't finished. Either finish the work or remove the marker. Exception: intentional scope-limiting TODOs ("TODO(next-CR): add pagination") are communication to the reviewer, not WIP debris. Verdict ≥ 8: `FIX REQUIRED`.
@@ -31,6 +33,10 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 7. `narrative:` - **Does this comment narrate the development process?** Comments that narrate the development process rather than documenting the code: "After discussion with the agent, we decided…", "Approach 3 of 5", "This is cleaner than the previous version". Development diaries belong in commit messages or handoff docs, not in source code. Also: tests describing what the code *used to do* rather than what it does now. Verdict ≥ 8: `FIX REQUIRED`.
 
 8. `cross-ref:` - **Does this reference something the reviewer can't access?** Code or comments that reference specific commits in other repositories, branches that don't exist in this repo, or other changesets the reviewer cannot see from this code review alone. Exception: references to well-known external projects (e.g., "per RFC 8446 section 4.2") are fine. Might be intentional documentation of an external dependency. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
+9. `potential-hallucination:` - **Does this look like unverified AI-generated content?** URLs that lead nowhere, API methods that don't exist in the installed version, references to design docs or plans with no basis in the codebase, or comments that confidently explain behavior the code doesn't exhibit. The fix is verifying or removing the unverifiable claim. Verdict ≥ 8: `FIX REQUIRED`.
+
+10. `conflicting-assumptions:` - **Do new and existing code disagree on a shared contract?** The diff assumes one thing (sorted, non-null, inclusive boundary) while existing code it interacts with assumes the opposite. Both can't be right — one side has a latent bug. The fix is reconciling: update the new code to match the existing contract, or fix the existing code if the new assumption is correct. Verdict ≥ 8: `FIX REQUIRED`.
 
 ## Output Format
 
@@ -48,7 +54,7 @@ For commit-message-level findings:
 [<confidence 1-10>] commit <short-sha>: <tag> <what's wrong>. → <fix>.
 ```
 
-## Confidence Calibration (Self-Contained axis)
+## Confidence Calibration (Ready-for-Human-Review axis)
 
 See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 
@@ -69,9 +75,8 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - Do NOT flag TODO comments that are clearly intentional scope-limiting ("TODO(next-CR): add pagination") — these are communication to the reviewer, not WIP debris. Flag only TODOs that look like forgotten work.
 - Do NOT flag commit messages that reference the issue being solved (e.g., "Fixes #123") — these are standard CR metadata.
 - The test for every finding: "Would a fresh reviewer reading only this diff be confused by this, or would they go looking for something that doesn't exist here?"
-- The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `orphaned-test-fixture (new):`, `placeholder-value (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 
-- **vs Clean:** The Clean axis has `mixed-scope:` (unrelated changes bundled) and `stale-doc:` (docs describing old behavior). This axis owns the broader category of "reviewer confusion caused by development process artifacts leaking into the final product." If something would confuse a reviewer because it references the *process* rather than the *product*, it belongs here. If it's simply outdated documentation about the code's behavior, it belongs to Clean.
+- **vs Minimal:** The Minimal axis has `mixed-scope:` (unrelated changes bundled) and `stale-doc:` (docs describing old behavior). This axis owns the broader category of "reviewer confusion caused by development process artifacts leaking into the final product." If something would confuse a reviewer because it references the *process* rather than the *product*, it belongs here. If it's simply outdated documentation about the code's behavior, it belongs to Clean.
 - **vs Style:** Commit message formatting (capitalization, line length, conventional-commits compliance) belongs to Style. Commit message *accuracy* (does the message match the code?) belongs here.

@@ -16,6 +16,8 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 ## Findings Catalog
 
+The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `stale-cache (new):`, `race-condition (new):`). The same output format, confidence scoring, and verdict rules apply.
+
 1. `approach:` - **Right approach?** Is this solving the problem at the right level? Or is it patching a symptom, working around a limitation, or treating a design problem as a local code problem? Would a senior engineer look at this and say "yes, that's how I'd do it" — or would they say "this works, but you're going in the wrong direction"? Also applies when the diff reinvents a capability the codebase already provides (e.g., hand-rolling retry logic when the shared client already retries with backoff). The code works but isn't how a seasoned engineer would solve it. The fix requires rethinking, not just editing. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 2. `type-mismatch:` - **Right data type?** Are the types chosen for the job, or inherited from convenience? Would a different representation make the code obviously correct instead of subtly correct? Does the type system enforce the invariants, or do runtime checks compensate for a weak type choice? Using `int` where the domain is non-negative, using a string where an enum would make invalid states unrepresentable, using a signed type where the value is inherently unsigned. Verdict ≥ 8: `NEEDS DISCUSSION`.
@@ -81,10 +83,9 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - For items that depend on system context (#1 approach, #5/#6 coupling, #7 self-documenting), you SHOULD read callers, callees, and adjacent modules — not just the diff hunks.
 - Every finding MUST include a concrete alternative — what the code *should* look like. "This feels wrong" is not a finding. "This should use X because Y" is.
 - Do NOT flag working code just because you'd write it differently if the difference is purely aesthetic. The threshold is: "would a senior engineer reviewing this PR ask for a change, or would they approve it?"
-- Do NOT repeat findings that Security or Clean would catch. If it's exploitable, Security owns it. If it's dead code, Clean owns it. Quality owns the middle ground: code that works, isn't exploitable, isn't dead, but isn't the *right way* to solve the problem.
-- The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `stale-cache (new):`, `race-condition (new):`). The same output format, confidence scoring, and verdict rules apply.
+- Do NOT repeat findings that Security or Minimal would catch. If it's exploitable, Security owns it. If it's dead code, Minimal owns it. Quality owns the middle ground: code that works, isn't exploitable, isn't dead, but isn't the *right way* to solve the problem.
 
 ## Boundaries
 
-- **vs Clean:** If the fix is "delete code" → Clean. If the fix is "rethink the approach (and the result happens to be shorter)" → Quality. Clean findings have an obvious mechanical replacement. Quality findings require judgment about what the replacement *should be*.
+- **vs Minimal:** If the fix is "delete code" → Minimal. If the fix is "rethink the approach (and the result happens to be shorter)" → Quality. Minimal findings have an obvious mechanical replacement. Quality findings require judgment about what the replacement *should be*.
 - **vs Security:** If a finding involves a type mismatch or fragile assumption that is also exploitable by an attacker, it belongs to Security (which takes priority). Quality catches the same class of issue when the impact is correctness/maintainability rather than exploitability.

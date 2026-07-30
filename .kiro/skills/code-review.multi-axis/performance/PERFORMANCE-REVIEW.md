@@ -16,6 +16,8 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 ## Findings Catalog
 
+The Findings Catalog is not exhaustive. If you identify a performance concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `blocking-main-thread (new):`, `gc-pressure (new):`). The same output format, confidence scoring, and verdict rules apply.
+
 ### Algorithmic Complexity
 
 1. `complexity:` - **Is there a better algorithm or data structure that reduces the runtime complexity?** An O(n²) operation where an O(n log n) or O(n) alternative exists using a different data structure (hash map, sorted set, heap). A nested loop doing lookups that a single-pass approach with a lookup table would eliminate. The fix is switching to the better algorithm/data structure. Only flag when the improvement is at least one complexity class and the input size is non-trivial (not a 5-element list). Verdict ≥ 8: `NEEDS DISCUSSION`.
@@ -125,7 +127,6 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - When flagging algorithmic complexity, state the current and proposed complexity explicitly (O(n²) → O(n log n)).
 - Consider data size. An O(n²) algorithm on a 5-element fixed-size list is fine. An O(n²) algorithm on a user-controlled or growing collection is a finding.
 - Read callers to determine whether code is on a hot path. A function called from a tight loop or a per-request handler has different performance requirements than one called at startup.
-- The Findings Catalog is not exhaustive. If you identify a performance concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `blocking-main-thread (new):`, `gc-pressure (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 

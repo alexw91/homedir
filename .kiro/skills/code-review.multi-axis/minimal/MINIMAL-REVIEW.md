@@ -1,4 +1,4 @@
-# Clean Code Review (Sub-skill)
+# Minimal Code Review (Sub-skill)
 
 Review the diff for unnecessary complexity. The change's best outcome is getting shorter.
 
@@ -16,6 +16,8 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 ## Findings Catalog
 
+The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `accidental-export (new):`, `stale-import (new):`). The same output format, confidence scoring, and verdict rules apply.
+
 1. `delete:` - **Is this code alive?** Dead code, unused flexibility, speculative feature. No callers, no consumers, no path that reaches it. The replacement is nothing — delete it. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 2. `stdlib:` - **Does the standard library already do this?** Hand-rolled implementation of something the standard library or framework ships with the exact same signature and behavior. Name the stdlib function that replaces it. Verdict ≥ 8: `NEEDS DISCUSSION`.
@@ -32,9 +34,9 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 8. `identifier-fidelity:` - **Is the canonical form preserved?** An identifier (key, name, path, ARN, URI) is available in its fully qualified canonical form but the code constructs an abbreviated or partial representation. Preserve identifier fidelity: use the canonical form everywhere — in labels, logs, error messages, test names, and diagnostics. The test: can a reader copy the value from the output, paste it into a codebase search, and land on exactly one definition? If not, the representation is insufficiently canonical. Only flag when the consumer accepts the full form and no format constraint forces abbreviation. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
-9. `no-gate:` - **Does this test actually gate on the new behavior?** Test assertion that would pass without the change (does not gate on the new behavior). Also applies when the test asserts the implementation's output without independent evidence that the output is correct — encoding the implementation rather than the specification. If the function has a bug and the test encodes that buggy output, both pass but nothing is verified. Replacement: derive the expected value from the requirement, not from running the code. Verdict ≥ 8: `FIX REQUIRED`.
+9. `stale-doc:` - **Does the documentation match the new behavior?** Comment, docstring, or header documentation that describes the old (now-changed) behavior. The code changed but the docs didn't follow. Update to reflect the new semantics. Verdict ≥ 8: `FIX REQUIRED`.
 
-10. `stale-doc:` - **Does the documentation match the new behavior?** Comment, docstring, or header documentation that describes the old (now-changed) behavior. The code changed but the docs didn't follow. Update to reflect the new semantics. Verdict ≥ 8: `FIX REQUIRED`.
+Note: Test quality checks (including `no-gate:`) have moved to the Test Quality axis (`test-quality/TEST-QUALITY-REVIEW.md`).
 
 ## Output Format
 
@@ -53,17 +55,17 @@ For complex findings:
   Detail: <explanation of why this is unnecessary and what the shorter form achieves>
 ```
 
-## Confidence Calibration (Clean axis)
+## Confidence Calibration (Minimal axis)
 
 See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 
-- **10:** stdlib function exists with the exact same signature and behavior. Or: test provably passes without the change (verified by reading the assertion).
+- **10:** stdlib function exists with the exact same signature and behavior.
 - **9:** Dead code with no callers. Or: docstring directly contradicts the new code behavior.
 - **8:** Clear duplication with an existing function doing the same thing in the same module.
 - **6-7:** Likely unnecessary but the author might know about a planned second consumer.
 - **4-5:** Could be shorter but the current form is arguably more readable.
 - **2-3:** Nitpick-level compression that trades clarity for brevity.
-- **1:** Pure style preference disguised as a clean-code concern.
+- **1:** Pure style preference disguised as a minimality concern.
 
 ## Rules
 
@@ -73,10 +75,9 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
   - Explicit error paths for "can't happen" cases
   - Protocol conformance steps that prevent future misuse
   - Exhaustive switch/enum handling
-- Aim for one-line-per-finding brevity, but expand if a shrink suggestion requires showing the replacement code or if the reasoning for a `no-gate:` tag is non-obvious.
-- The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `accidental-export (new):`, `stale-import (new):`). The same output format, confidence scoring, and verdict rules apply.
+- Aim for one-line-per-finding brevity, but expand if a shrink suggestion requires showing the replacement code.
 
 ## Boundaries
 
-- **vs Quality:** If the fix is "delete code" → Clean. If the fix is "rethink the approach (and the result happens to be shorter)" → Quality. Clean findings have an obvious mechanical replacement. Quality findings require judgment about what the replacement *should be*.
-- **vs Style:** Clean is about unnecessary complexity (remove it). Style is about convention conformance (rewrite it to match the pattern). If code follows conventions but is unnecessarily verbose, it's Clean. If code is minimal but breaks naming conventions, it's Style.
+- **vs Quality:** If the fix is "delete code" → Minimal. If the fix is "rethink the approach (and the result happens to be shorter)" → Quality. Minimal findings have an obvious mechanical replacement. Quality findings require judgment about what the replacement *should be*.
+- **vs Style:** Minimal is about unnecessary complexity (remove it). Style is about convention conformance (rewrite it to match the pattern). If code follows conventions but is unnecessarily verbose, it's Minimal. If code is minimal but breaks naming conventions, it's Style.

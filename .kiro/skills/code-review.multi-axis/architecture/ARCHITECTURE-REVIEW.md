@@ -16,6 +16,8 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 ## Findings Catalog
 
+The Findings Catalog is not exhaustive. If you identify a structural concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `split-brain (new):`, `implicit-ordering (new):`). The same output format, confidence scoring, and verdict rules apply.
+
 ### Module Depth and Placement
 
 1. `shallow:` - **Is this module earning its keep?** A module whose interface is nearly as complex as its implementation — callers must know almost everything about the internals to use it correctly. Apply the deletion test: if you deleted this module, would complexity concentrate in one place (bad — the module was shallow wrapper) or would it reappear across N callers (good — the module was absorbing real complexity)? Also applies when a function is extracted purely for testability but the real bugs live in how it's called, not in the logic itself (no locality). The fix is either deepening the module (absorbing more behind the interface) or inlining it into the caller if the abstraction isn't paying for itself. Verdict ≥ 8: `NEEDS DISCUSSION`.
@@ -116,7 +118,6 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - Do NOT flag exhaustive pattern matching on security-sensitive enums as `extension-hostile:`. Those belong to the Security axis's defense-in-depth rule.
 - Do NOT flag single-implementation abstractions without a known second consumer as `premature-seam:` when the single implementation is a test mock — a production + test pair is a legitimate two-adapter seam.
 - Read beyond the diff. Architecture findings require understanding callers, callees, import graphs, and module boundaries. Use `--name-only` to triage, then selectively read surrounding context.
-- The Findings Catalog is not exhaustive. If you identify a structural concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `split-brain (new):`, `implicit-ordering (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 
@@ -127,4 +128,4 @@ Overlap between axes is acceptable and expected. Multiple axes reporting the sam
 - **vs Security:** Exhaustive enum matching in security-critical code is defense-in-depth from Security's perspective. If it also looks like `extension-hostile:` from Architecture's perspective, both can flag it — Architecture should note the security rationale if visible.
 - **vs Style:** File naming conventions belong to Style. Whether code is in the *right* file belongs here. Both can flag a misnamed file that's also in the wrong location.
 - **vs Performance:** A missing batch API might be flagged by both Architecture (structural seam needed) and Performance (N+1 calls). Both perspectives are valuable.
-- **vs Self-Contained:** Dangling references to deleted modules belong to Self-Contained. Modules that *should* be extracted but haven't been yet (`missing-module:`) belong here. A function referencing a removed module could be flagged by both.
+- **vs Ready-for-Human-Review:** Dangling references to deleted modules belong to Ready-for-Human-Review. Modules that *should* be extracted but haven't been yet (`missing-module:`) belong here. A function referencing a removed module could be flagged by both.

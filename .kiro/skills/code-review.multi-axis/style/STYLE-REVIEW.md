@@ -20,6 +20,8 @@ You will also receive a list of conventions source files to read (steering files
 
 ## Findings Catalog
 
+The Findings Catalog is not exhaustive. If you identify a style concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `inconsistent-error-format (new):`, `mixed-quote-style (new):`). The same output format, confidence scoring, and verdict rules apply.
+
 1. `naming:` - **Does this follow the project's naming conventions?** Naming conventions (variables, files, exports) that deviate from the established pattern — casing, prefixes, suffixes, or module organization. Check against documented conventions or the prevailing pattern in adjacent files. This is about convention conformance, not semantic accuracy (that's Quality's `misleading-name:`). Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 2. `error-style:` - **Does error handling follow the project's convention?** Error handling approaches that differ from the project's established pattern — different error types, inconsistent propagation patterns, or non-standard recovery mechanisms where the project has a clear norm. Verdict ≥ 8: `NEEDS DISCUSSION`.
@@ -83,10 +85,9 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - If no explicit conventions docs were provided, sample 2-3 existing files in the same directory as the changed files to establish the local conventions.
 - Do NOT flag subjective style preferences with no documented basis.
 - Do NOT flag patterns that are consistent with the existing codebase even if they aren't "best practice" globally — the convention IS the codebase pattern.
-- The Findings Catalog is not exhaustive. If you identify a style concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `inconsistent-error-format (new):`, `mixed-quote-style (new):`). The same output format, confidence scoring, and verdict rules apply.
 
 ## Boundaries
 
-- **vs Self-Contained:** Commit message formatting (capitalization, line length, conventional-commits compliance) belongs here. Commit message *accuracy* (does the message match the code?) belongs to Self-Contained.
+- **vs Ready-for-Human-Review:** Commit message formatting (capitalization, line length, conventional-commits compliance) belongs here. Commit message *accuracy* (does the message match the code?) belongs to Ready-for-Human-Review.
 - **vs Quality:** Naming convention checks (casing, prefixes) belong here. Semantic accuracy of names (the name lies about what the code does) belongs to Quality's `misleading-name:` tag.
-- **vs Clean:** Style is about convention conformance (rewrite it to match the pattern). Clean is about unnecessary complexity (remove it). If code follows conventions but is unnecessarily verbose, it's Clean. If code is minimal but breaks naming conventions, it's Style.
+- **vs Minimal:** Style is about convention conformance (rewrite it to match the pattern). Minimal is about unnecessary complexity (remove it). If code follows conventions but is unnecessarily verbose, it's Minimal. If code is minimal but breaks naming conventions, it's Style.
