@@ -48,6 +48,28 @@ The Findings Catalog is not exhaustive. If you identify a concern that answers t
 
 15. `wrong-api-usage:` - **Is the external API call correct?** A call to an external API that doesn't match the API's actual contract — wrong argument order, missing required setup, unhandled error return, or use of a method that doesn't exist in the installed version. The code compiles (or the method name is plausible) but the behavior at runtime won't match the author's intent. The fix is reading the API documentation and correcting the call. Verdict ≥ 8: `FIX REQUIRED`.
 
+### Resource Safety
+
+16. `unbounded-growth:` - **Can this collection grow without limit?** An in-memory data structure (list, map, queue, cache) that accepts entries without a size cap, eviction policy, or TTL. Under sustained load, it becomes a memory leak. Signals: `.add()` / `.push()` / `.set()` in a loop or event handler with no corresponding removal, capacity check, or bounded constructor. The fix is a bounded data structure, LRU eviction, or explicit size guard. Verdict ≥ 8: `FIX REQUIRED`.
+
+17. `time-assumption:` - **Does this code assume properties of time that don't always hold?** Treating a day as exactly 24 hours (DST), assuming months have consistent lengths, expecting timestamps to be monotonically increasing (NTP, clock skew), comparing wall-clock times across machines, or using millisecond precision where the clock only provides seconds. The fix is using duration-aware libraries, explicit timezone handling, and monotonic clocks where ordering matters. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
+18. `missing-error-domain:` - **Can the caller distinguish failure modes from this error?** Error types that don't carry enough semantic information for callers to make recovery decisions. A function returns a generic `Error("failed")` where callers need to distinguish retryable vs permanent, auth vs network, transient vs configuration. When all error paths produce the same opaque type, callers resort to string matching or treat all failures identically. The fix is a typed error hierarchy or error codes that let callers dispatch on failure kind without inspecting messages. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
+### Concurrency Correctness
+
+19. `race-condition:` - **Can concurrent access corrupt this state?** Shared mutable state accessed from multiple threads, goroutines, async tasks, or request handlers without synchronization. Correctness depends on scheduling luck. Signals: a field written in one thread and read in another with no lock, atomic, or channel; a global variable mutated inside a request handler. The fix is synchronization (mutex, atomic, channel) or eliminating the sharing. Verdict ≥ 8: `FIX REQUIRED`.
+
+20. `check-then-act:` - **Can the condition change between checking and acting?** A condition is tested and then assumed to still hold when the subsequent action executes — but another thread, process, or external system can invalidate it in between (TOCTOU). Classic examples: `if (file.exists()) file.read()`, `if (!map.contains(key)) map.put(key, value)`. The fix is an atomic compare-and-swap, a lock spanning both operations, or an API that combines them (`putIfAbsent`, `O_CREAT|O_EXCL`). Verdict ≥ 8: `FIX REQUIRED`.
+
+21. `lock-ordering:` - **Are locks acquired in a consistent order?** Two or more locks acquired in different orders across code paths. Thread A holds lock1 and waits for lock2; Thread B holds lock2 and waits for lock1 → deadlock. The fix is establishing and documenting a global lock ordering, or restructuring to acquire only one lock at a time. Verdict ≥ 8: `FIX REQUIRED`.
+
+22. `unsafe-publication:` - **Is this object fully constructed before it becomes visible to other threads?** An object reference is stored to a shared location (field, collection, global) before its constructor or initializer has completed. Other threads may observe partially initialized state. Signals: assigning `this` to a static field inside a constructor; publishing a mutable object without a happens-before edge (volatile, synchronized, final). The fix is ensuring a happens-before relationship between construction and publication. Verdict ≥ 8: `FIX REQUIRED`.
+
+### Domain Language
+
+23. `wrong-domain-term:` - **Does this name use the domain's established vocabulary?** A variable, function, or type uses a term that's understandable but foreign to the domain's standard language. The concept has a well-known name (pipelines have "stages", TLS has "cipher suites", HTTP has "status codes") but the code introduces a synonym ("tier", "encryption method", "response number") that will confuse anyone who knows the domain. Catching this early prevents the wrong term from compounding through tests, documentation, and conversations. Distinct from `misleading-name:` (name contradicts behavior) — here the name is coherent but uses the wrong word for an established concept. The fix is adopting the domain's canonical term. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
 ## Output Format
 
 Follow `OUTPUT-CONTRACT.md` exactly.

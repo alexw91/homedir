@@ -9,14 +9,14 @@ User: `code-review.multi-axis since main`
 
 ### Findings
 
-1. [SECURITY 9/10] FAIL: Attacker-controlled bypass. `req.query.role` sets permission level without server-side validation. → Validate against allowlist.
-2. [MINIMAL 9/10] stale-doc: src/handlers/auth.ts:L10. Docstring says "returns 403 on missing token" but the new code returns 401. → Update docstring.
-3. [STYLE 8/10] src/handlers/auth.ts:L38. Bare `any` type on `decoded` variable. Cite: .kiro/steering/clean-code.md "Encode invariants in types, not comments."
+1. [SECURITY:attacker-bypass 9/10] src/handlers/auth.ts:L22. `req.query.role` sets permission level without server-side validation. → Validate against allowlist.
+2. [MINIMAL:stale-doc 9/10] src/handlers/auth.ts:L10. Docstring says "returns 403 on missing token" but the new code returns 401. → Update docstring.
+3. [STYLE:bare-any 8/10] src/handlers/auth.ts:L38. Bare `any` type on `decoded` variable. Cite: .kiro/steering/clean-code.md "Encode invariants in types, not comments."
 
 ### Warnings (confidence < 8)
 
-4. [MINIMAL 6/10] shrink: src/handlers/auth.ts:L42. Two identical null checks on `user.id`. Single: `if (!user?.id)`. -2 lines.
-5. [SECURITY 5/10] Same class elsewhere. `src/handlers/admin.ts:L88` has a similar unvalidated role check. → Verify separately.
+4. [MINIMAL:shrink 6/10] src/handlers/auth.ts:L42. Two identical null checks on `user.id`. Single: `if (!user?.id)`. -2 lines.
+5. [SECURITY:same-class-elsewhere 5/10] src/handlers/admin.ts:L88. Similar unvalidated role check. → Verify separately.
 
 requirements-review: Passed. 0 findings.
 
@@ -52,7 +52,7 @@ User: `code-review.multi-axis since feature-branch-base`
 
 ### Warnings (confidence < 8)
 
-1. [STYLE 6/10] src/config.ts:L12. Inconsistent quote style (single vs double). Cite: codebase convention.
+1. [STYLE:quote-inconsistency 6/10] src/config.ts:L12. Inconsistent quote style (single vs double). Cite: codebase convention.
 
 style-review: Passed. 0 findings.
 minimal-review: Passed. 0 findings.
@@ -77,14 +77,14 @@ User: `code-review.multi-axis architecture quality since main`
 
 ### Findings
 
-1. [SECURITY 9/10] FAIL: Fails closed. Error in token validation falls through to allow access. → Return 401 on any verification error.
-2. [ARCHITECTURE 8/10] single-responsibility: src/notifications/NotificationDispatcher.ts:L34. Switch on channel type — adding Slack requires editing this function. → Handler registry keyed by channel enum.
-3. [QUALITY 8/10] leaky-abstraction: src/storage/CachedStore.ts:L72. IStore abstraction exposes cache-specific methods. Callers must know about caching to use it correctly. → Separate IStore from ICachedStore.
+1. [SECURITY:fails-closed 9/10] src/auth/tokenValidator.ts:L55. Error in token validation falls through to allow access. → Return 401 on any verification error.
+2. [ARCHITECTURE:single-responsibility 8/10] src/notifications/NotificationDispatcher.ts:L34. Switch on channel type — adding Slack requires editing this function. → Handler registry keyed by channel enum.
+3. [QUALITY:leaky-abstraction 8/10] src/storage/CachedStore.ts:L72. IStore abstraction exposes cache-specific methods. Callers must know about caching to use it correctly. → Separate IStore from ICachedStore.
 
 ### Warnings (confidence < 8)
 
-4. [ARCHITECTURE 7/10] inverted-dependency: src/billing/InvoiceGenerator.ts:L5. Domain class imports StripeClient directly. Untestable without Stripe sandbox. → Accept a PaymentGateway interface.
-5. [MINIMAL 6/10] shrink: src/notifications/NotificationDispatcher.ts:L50. Duplicated retry loop. Extract to `withRetry()`.
+4. [ARCHITECTURE:inverted-dependency 7/10] src/billing/InvoiceGenerator.ts:L5. Domain class imports StripeClient directly. Untestable without Stripe sandbox. → Accept a PaymentGateway interface.
+5. [MINIMAL:shrink 6/10] src/notifications/NotificationDispatcher.ts:L50. Duplicated retry loop. Extract to `withRetry()`.
 
 requirements-review: Passed. 0 findings.
 
@@ -100,7 +100,7 @@ User: `code-review.multi-axis backwards-compatible since main`
 
 ### Findings
 
-1. [BACKWARDS-COMPATIBLE 9/10] removed-option: tls/s2n_security_policies.c:L482. TLS_RSA_WITH_AES_128_CBC_SHA removed from "default" policy cipher list. → Peers supporting only this cipher can no longer negotiate.
+1. [BACKWARDS-COMPATIBLE:removed-option 9/10] tls/s2n_security_policies.c:L482. TLS_RSA_WITH_AES_128_CBC_SHA removed from "default" policy cipher list. → Peers supporting only this cipher can no longer negotiate.
   Scenario:
     Setup: Server configured with s2n security policy "default"; peer client only supports TLS_RSA_WITH_AES_128_CBC_SHA.
     Old (before): Handshake succeeds, cipher TLS_RSA_WITH_AES_128_CBC_SHA selected.

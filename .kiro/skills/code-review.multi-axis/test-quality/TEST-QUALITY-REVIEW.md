@@ -36,6 +36,18 @@ The Findings Catalog is not exhaustive. If you identify a concern that answers t
 
 9. `stale-test:` - **Does this existing test reflect the new behavior?** Production code behavior changed in this diff but an existing test still asserts the old behavior. The test passes only because it hasn't been updated to match the new semantics — it's now testing something that no longer exists. Update the test to assert the new expected behavior. Verdict ≥ 8: `FIX REQUIRED`.
 
+10. `test-boilerplate:` - **Can these tests share a helper?** Multiple tests in the diff repeat the same setup/invocation/assertion pattern with only the input and expected output varying. Extract the shared ceremony into a named helper function (or use parameterized tests / test.each) so each test case is a single line declaring inputs and expectations. The helper name documents the pattern being tested. Only flag when 3+ tests share the same structural shape. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
+11. `non-exhaustive:` - **Could this test cover the full input space instead of sampling?** The function under test accepts a small, enumerable domain (a finite enum, a handful of valid status codes, a boolean flag) but the test only exercises a subset. When the domain is small enough to enumerate cheaply, exhaustive coverage catches new variants immediately. NOT a violation for large or continuous domains where property-based testing is appropriate. The fix is parameterizing over the complete set. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
+12. `missing-harness-canary:` - **Is there proof this detection harness actually detects?** Tests rely on a complex harness (sanitizers, fuzz targets, custom lint rules, specialized build flags) but no single canary test deliberately triggers a known violation to prove the harness is configured correctly. This is a 1:N relationship — one canary validates the infrastructure that N other tests depend on. Without it, a misconfigured harness silently produces false negatives across the entire suite. The fix is one deliberate violation that asserts the harness catches it. Verdict ≥ 8: `FIX REQUIRED`.
+
+13. `missing-boundary:` - **Are boundary values tested?** A function with numeric ranges, collection sizes, or capacity limits is tested with a happy-path value and possibly one error case, but skips the critical boundaries: zero/empty, one, max, and max+1. Off-by-one errors are the most common bug class in buffer operations, pagination, and protocol parsing — and they live exclusively at boundaries. The fix is adding test cases at each boundary edge. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
+14. `test-ordering-dependency:` - **Do these tests pass in isolation?** Tests that pass when run in suite order but fail when run individually or shuffled. One test's side effect (global state, database row, file on disk) is another test's implicit setup. The test suite is green by accident of execution order. The fix is isolating each test's state completely — setup and teardown per test, no reliance on run order. Verdict ≥ 8: `FIX REQUIRED`.
+
+15. `unexplained-golden-value:` - **Where does this expected value come from?** A test asserts against a magic constant (`expect(result).toBe(0x1A3F)`) with no comment, variable name, or derivation trail explaining its provenance. If the value was obtained by running the production code and pasting the output, it's a `tautological:` finding. If it came from a spec, RFC test vector, or manual calculation, the test should document that so a future maintainer can independently verify it. The fix is naming the constant or adding a one-line comment citing the source. Verdict ≥ 8: `NEEDS DISCUSSION`.RED`.
+
 ## Output Format
 
 Follow `OUTPUT-CONTRACT.md` exactly.
@@ -77,7 +89,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - In remote mode, use the platform file-read recipe to check for existing tests when confidence would otherwise be below 9. If you cannot verify, flag at confidence 8 with a note that existing coverage wasn't verified.
 - Read both the production code and the test code in the diff holistically. Understand what the production code does, then assess whether the tests actually prove it works.
 - For `no-gate:` and `tautological:`: mentally remove the production code change and ask "would this test still pass?" If yes, it's not gating.
-- Do NOT flag test infrastructure (helpers, fixtures, factories) as needing their own tests. Test infrastructure is tested by the tests that use it.
+- Do NOT flag test infrastructure (helpers, fixtures, factories) as needing their own tests. Test infrastructure is tested by the tests that use it. Exception: complex detection harnesses (sanitizers, fuzz targets, custom lint rules) that could silently fail to detect — these are covered by `missing-harness-canary:`.
 - Do NOT flag integration tests or end-to-end tests for brittleness based solely on their scope. Brittleness applies when tests depend on implementation details, not when they depend on system behavior.
 
 ## Boundaries

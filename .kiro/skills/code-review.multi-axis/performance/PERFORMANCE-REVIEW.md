@@ -34,17 +34,17 @@ The Findings Catalog is not exhaustive. If you identify a performance concern th
 
 ### Memory and Allocation
 
-6. `avoidable-copy:` - **Is data copied when a reference, slice, or view would suffice?** Cloning a large buffer to pass ownership when a borrow or slice covers the use case. Converting to a new string just to compare or hash. Copying into a Vec when an iterator would compose without materializing. Read-only consumers don't need owned data. The fix is passing a reference, slice, or zero-copy view. Verdict ≥ 8: `NEEDS DISCUSSION`.
+6. `avoidable-copy:` - **Is data copied when a reference, slice, or view would suffice?** Cloning a large buffer to pass ownership when a borrow or slice covers the use case. Converting to a new string just to compare or hash. Copying into a Vec when an iterator would compose without materializing. Read-only consumers don't need owned data. Also flag gathering buffers into a contiguous copy solely for I/O when a vectored API exists, especially when large parts are copied without reducing downstream writes. The fix is passing a reference, slice, or zero-copy view. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 7. `allocation-in-loop:` - **Is memory allocated inside a loop when it could be allocated once and reused?** Creating a new buffer, string builder, temporary collection, or object on every iteration when the same allocation could be cleared and reused across iterations. The fix is hoisting the allocation outside the loop and resetting/clearing between iterations. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
-8. `oversized-allocation:` - **Is significantly more memory allocated than needed?** Pre-allocating a collection with a capacity vastly larger than the expected size. Using a data structure with high per-element overhead (linked list, tree) when a compact alternative (array, flat buffer) would serve the access pattern. The fix is right-sizing the allocation or choosing a more compact representation. Verdict ≥ 8: `NEEDS DISCUSSION`.
+8. `oversized-allocation:` - **Is significantly more memory allocated than needed?** Pre-allocating a collection with a capacity vastly larger than the expected size. Using a data structure with high per-element overhead (linked list, tree) when a compact alternative (array, flat buffer) would serve the access pattern. Also flag long-lived reusable buffers that grow with request data but never cap or shrink retained capacity. The fix is right-sizing the allocation or choosing a more compact representation. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 ### Batching and I/O
 
 9. `n-plus-one:` - **Are N individual calls made where a single batch call would work?** A loop that makes one database query, API call, or I/O operation per element when a batch API exists. Issuing individual HTTP requests inside a loop instead of a bulk endpoint. Writing records one at a time instead of using batch/bulk insert. The fix is collecting inputs and making one batch call. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
-10. `chatty-io:` - **Are multiple round-trips made where fewer would suffice?** Multiple sequential reads/writes to the same file or socket that could be combined. Fetching related data in separate calls when a join or compound query would return it in one. Sending many small messages when a single aggregated message would carry the same information. The fix is combining I/O operations to reduce round-trip overhead. Verdict ≥ 8: `NEEDS DISCUSSION`.
+10. `chatty-io:` - **Are multiple round-trips made where fewer would suffice?** Multiple sequential reads/writes to the same file or socket that could be combined. Fetching related data in separate calls when a join or compound query would return it in one. Sending many small messages when a single aggregated message would carry the same information. Also flag write plus flush, commit, or finalize inside loops when it prevents batching or creates one record, callback, or syscall per item. The fix is combining I/O operations to reduce round-trip overhead. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 ### API Choice
 
@@ -60,13 +60,21 @@ The Findings Catalog is not exhaustive. If you identify a performance concern th
 
 14. `cache-hostile:` - **Does the data layout defeat CPU cache locality?** Iterating over a linked list or pointer-chasing through heap-allocated nodes when a flat array would give sequential access. Struct-of-arrays vs array-of-structs mismatch for the dominant access pattern. Random-access jumps through a large data structure when the same work could be done in a single sequential pass. Column-major access on a row-major array (or vice versa). The fix is restructuring data for sequential access on the hot path. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
-15. `false-sharing:` - **Are independent per-thread variables packed into the same cache line?** Multiple threads writing to adjacent memory locations (same 64-byte cache line) without realizing they're contending. Per-thread counters, flags, or state packed into adjacent struct fields or array slots. Signals: a struct with per-thread fields and no padding, atomic counters in adjacent array indices. The fix is cache-line padding between per-thread state or separating into per-thread allocations. Most relevant in C/C++/Rust; less common in managed languages but can appear in lock-free data structures. Verdict ≥ 8: `NEEDS DISCUSSION`.
+15. `false-sharing:` - **Are independent per-thread variables packed into the same cache line?** Multiple threads writing to adjacent memory locations on the same target cache line without realizing they're contending. Per-thread counters, flags, or state packed into adjacent struct fields or array slots. Signals: a struct with per-thread fields and no padding, atomic counters in adjacent array indices. The fix is target-aware cache-line padding between per-thread state or separate per-thread allocations. Most relevant in C/C++/Rust; less common in managed languages but can appear in lock-free data structures. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
+### Branch Predictability
+
+16. `unpredictable-branch:` - **Does a hot loop branch on high-entropy input?** Branches driven by random, hashed, or externally varied data can mispredict or prevent vectorization. Consider branchless selection or SIMD only for non-trivial per-request or per-record loops; otherwise preserve readable branching. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 ### Serialization and Format Overhead
 
-16. `serialize-deserialize:` - **Is data round-tripped through a format unnecessarily?** Data is serialized to a transport format and immediately deserialized back in the same process or between tightly-coupled components. `JSON.stringify()` followed by `JSON.parse()` to deep-clone (use `structuredClone` or a manual copy). Converting to a string representation to pass to another function that immediately parses it back. Encoding to bytes just to hash when a structured hasher would work directly. The fix is passing the structured data directly or using a cheaper cloning mechanism. Verdict ≥ 8: `NEEDS DISCUSSION`.
+17. `serialize-deserialize:` - **Is data round-tripped through a format unnecessarily?** Data is serialized to a transport format and immediately deserialized back in the same process or between tightly-coupled components. `JSON.stringify()` followed by `JSON.parse()` to deep-clone (use `structuredClone` or a manual copy). Converting to a string representation to pass to another function that immediately parses it back. Encoding to bytes just to hash when a structured hasher would work directly. The fix is passing the structured data directly or using a cheaper cloning mechanism. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
-17. `format-overhead:` - **Is a heavyweight format used where a lighter one would suffice?** Using XML or JSON with full schema validation on an internal, non-durable, same-process data path where a compact binary format, raw struct, or simple delimiter would work. Parsing a full CSV row with a library when you only need one column (use split + index). Pretty-printing output that will be machine-parsed downstream. The fix is using the lightest representation that satisfies the actual requirements of the consumer — reserving heavyweight formats for external boundaries and durable storage. Verdict ≥ 8: `NEEDS DISCUSSION`.
+18. `format-overhead:` - **Is a heavyweight format used where a lighter one would suffice?** Using XML or JSON with full schema validation on an internal, non-durable, same-process data path where a compact binary format, raw struct, or simple delimiter would work. Pretty-printing output that will be machine-parsed downstream. The fix is using the lightest representation that satisfies the actual requirements of the consumer — reserving heavyweight formats for external boundaries and durable storage. Verdict ≥ 8: `NEEDS DISCUSSION`.
+
+### Tuning Assumptions
+
+19. `stale-tuning:` - **Is a tuning constant coupled to a lower-layer limit that can change independently?** Flag duplicated record sizes, chunk thresholds, page sizes, and batch limits that select an optimization path. Derive the value from its authoritative source or centralize the assumption. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 ## Output Format
 
@@ -95,12 +103,12 @@ Examples:
 [8] allocation-in-loop: src/batch/process.ts:L22. New Buffer allocated per record inside a 10k-record loop. → Allocate once before the loop, clear() between iterations.
 [8] n-plus-one: src/db/users.ts:L55. One SELECT per user ID in a loop (N+1 pattern, up to 500 users). → Use a single WHERE id IN (...) query.
 [7] linear-search: src/config/lookup.ts:L30. Array.find() on a 200-element policy list inside a per-request handler. → Index policies into a Map<string, Policy> at startup.
-[8] suboptimal-api: src/s3/upload.ts:L15. Individual PutObject calls in a loop for 100+ small files. → Use S3 batch/multipart upload or parallelize with Promise.all().
+[8] suboptimal-api: src/s3/upload.ts:L15. Individual PutObject calls in a loop for 100+ small files. → Run bounded concurrent PutObject calls.
 [6] chatty-io: src/log/flush.ts:L40. Three sequential write() calls to the same fd per log line. → Buffer and write once per line.
 [8] serial-when-parallel: src/api/enrich.ts:L20. Three independent API calls awaited sequentially (user, permissions, config) — total latency is sum of all three. → Promise.all([fetchUser(), fetchPerms(), fetchConfig()]) for max-of-three latency.
 [7] contention: src/cache/store.rs:L15. Global mutex held across a 50ms network fetch to the backing store. All other cache reads block. → Narrow the lock to the cache-map update only; fetch outside the critical section.
 [8] cache-hostile: src/physics/particles.c:L30. Linked list of Particle* iterated every frame for position updates — pointer chasing defeats prefetch. → Store particles in a flat array; iterate sequentially.
-[6] false-sharing: src/metrics/counters.c:L5. Per-thread counters packed in adjacent uint64_t array slots — all on the same cache line. → Pad each counter to 64 bytes or use thread-local storage.
+[6] false-sharing: src/metrics/counters.c:L5. Per-thread counters packed in adjacent uint64_t array slots — all on the same target cache line. → Use target-aware padding or thread-local storage.
 [8] serialize-deserialize: src/handler/clone.ts:L12. Deep clone via JSON.parse(JSON.stringify(config)) on every request. → structuredClone(config) or a manual shallow copy (config is 3 flat fields).
 [7] format-overhead: src/internal/rpc.ts:L88. Internal inter-module call serializes args to JSON and parses on the other side — both are in the same process. → Pass the object directly; JSON adds ~2ms per call at 1000 calls/sec.
 ```
@@ -109,13 +117,12 @@ Examples:
 
 See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 
-- **10:** The inefficiency is on a measured hot path, the data size is known to be large, and the improvement is provably better by at least one complexity class.
-- **9:** Clear algorithmic improvement (e.g., O(n²) → O(n)) with evidence the input size is non-trivial from the code or its context (loop bounds, collection types, batch sizes).
-- **8:** Strong performance smell with reasonable assumptions about call frequency or data size. A senior engineer would flag this in review.
-- **6-7:** Likely improvement but depends on runtime characteristics the reviewer can't see (actual data sizes, call frequency, whether the hot path is really hot).
-- **4-5:** Micro-optimization. Measurably faster in a benchmark but unlikely to matter at the system level.
-- **2-3:** Pedantic. The difference is nanoseconds or single allocations in cold paths.
-- **1:** Purely theoretical. The optimization would make the code harder to read for no observable benefit.
+- **10:** Provable N-fold expensive work where a local batch operation exists.
+- **9:** Provably worse complexity or operation count on a non-trivial path.
+- **8:** Repeated allocation, copying, locking, or I/O inside a growing loop.
+- **6-7:** Plausible issue, but cardinality or call frequency is unknown.
+- **4-5:** Target-dependent CPU optimization without evidence the path is hot.
+- **1-3:** Theoretical or cold-path micro-optimization.
 
 ## Rules
 
@@ -127,6 +134,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 - When flagging algorithmic complexity, state the current and proposed complexity explicitly (O(n²) → O(n log n)).
 - Consider data size. An O(n²) algorithm on a 5-element fixed-size list is fine. An O(n²) algorithm on a user-controlled or growing collection is a finding.
 - Read callers to determine whether code is on a hot path. A function called from a tight loop or a per-request handler has different performance requirements than one called at startup.
+- When performance state is set during initialization, inspect reset, reuse, reconnect, and pooled-object paths.
 
 ## Boundaries
 
@@ -135,4 +143,4 @@ Overlap between axes is acceptable and expected. Multiple axes reporting the sam
 - **vs Quality:** An O(n²) algorithm might also be flagged by Quality as `approach:` ("wrong way to solve the problem"). That's fine — Performance focuses on the runtime cost; Quality focuses on whether a senior engineer would choose this approach at all.
 - **vs Security:** An algorithmic complexity issue exploitable as a DoS vector will be flagged by Security too. Performance catches the same pattern from a latency/cost perspective.
 - **vs Architecture:** A missing batch API might also be flagged by Architecture as a structural issue requiring a new module boundary. Performance flags the immediate "use the batch API that exists" fix.
-- **vs Clean:** Dead code that also wastes CPU may be flagged by Clean for deletion and by Performance for the wasted cycles. Both are valid lenses.
+- **vs Minimal:** Dead code that also wastes CPU may be flagged by Minimal for deletion and by Performance for the wasted cycles. Both are valid lenses.

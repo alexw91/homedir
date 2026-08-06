@@ -146,22 +146,26 @@ All sub-agents MUST return output conforming to `OUTPUT-CONTRACT.md`.
 
 ### Findings
 
-1. [SECURITY 9/10] FAIL: <checklist item>. <one-line summary>. → <suggested fix>.
-2. [MINIMAL 8/10] <tag>: <file>:L<line>. <what>. <replacement>.
-3. [STYLE 9/10] <file>:L<line>. <violation>. Cite: <convention source>.
-4. [READY-FOR-HUMAN-REVIEW 9/10] <file>:L<line>. <tag>: <what>. → <fix>.
+1. [SECURITY:integer-safety 9/10] src/tls/parse.c:L88. No bounds check on `len` param. → Add POSIX_ENSURE(len <= MAX_RECORD_SIZE).
+2. [MINIMAL:stale-doc 8/10] src/auth.ts:L10. Docstring says "returns 403" but code returns 401. → Update docstring.
+3. [STYLE:bare-any 9/10] src/auth.ts:L38. Bare `any` type on `decoded` variable. Cite: .kiro/steering/clean-code.md.
+4. [READY-FOR-HUMAN-REVIEW:dangling-ref 9/10] src/handlers.ts:L5. Import references deleted module. → Remove import.
+5. [ARCHITECTURE:scattered-definition 8/10] src/api/types.ts:L22 + src/worker/types.ts:L14. PolicyStatus enum defined in both files. → Extract to shared module.
+6. [QUALITY:race-condition 8/10] src/counter/metrics.ts:L12. requestCount++ from multiple async handlers without atomics. → Use AtomicInteger.
+7. [TEST-QUALITY:non-exhaustive 8/10] tst/policy/TlsVersionTest.java:L42. Only 2 of 4 TlsVersion enum values tested. → Parameterize over TlsVersion.values().
 
 ### Warnings (confidence < 8)
 
-5. [SECURITY 5/10] <checklist item>. <speculative concern>. → <suggestion>.
-6. [MINIMAL 6/10] <tag>: <file>:L<line>. <what>. <replacement>.
+8. [SECURITY:crypto-weakness 5/10] src/hash.ts:L3. SHA-1 used in non-critical path. → Consider SHA-256 if feasible.
+9. [ARCHITECTURE:data-clump 6/10] src/api/handlers.ts:L22,L55. (host, port, protocol) repeated in 3 signatures. → Extract to ServiceEndpoint type.
 
-### Verdict: <SHIP|FIX REQUIRED|NEEDS DISCUSSION> (<count per axis>)
+### Verdict: FIX REQUIRED (security: 1, minimal: 1, style: 1, ready-for-human-review: 1, architecture: 1, quality: 1, test-quality: 1)
 
-style-review: Passed. 0 findings.
 requirements-review: Passed. 0 findings.
+performance-review: Passed. 0 findings.
+backwards-compatible-review: Passed. 0 findings.
 
-Top priorities: #1, #3.
+Top priorities: #1, #6, #2.
 ```
 
 **Confidence scoring:**
@@ -177,6 +181,8 @@ Top priorities: #1, #3.
 **Axes with no findings:** render as `<axis>-review: Passed. 0 findings.`
 
 Do NOT merge or rerank findings across axes. Do NOT deduplicate — they represent different lenses on the same code. Multiple axes flagging the same line is a stronger signal, not redundancy.
+
+**Tag preservation:** Sub-agent findings include a tag name (e.g., `scattered-definition:`, `race-condition:`, `n-plus-one:`). The orchestrator MUST incorporate these tags into the consolidated output using the format `[AXIS:tag confidence/10]`. This gives the reader axis, finding category, and severity in a single scannable prefix.
 
 **Numbering rule:** All numbered items in the report share a single continuous sequence starting at 1. The Findings section, Warnings section, and any summary or priority list after the verdict MUST continue the same numbering — never restart at 1. This ensures the user can say "fix #3" unambiguously. If a post-verdict summary references findings, use the same numbers assigned in the Findings/Warnings sections above (e.g., "Top priorities: #1, #4, #2").
 
