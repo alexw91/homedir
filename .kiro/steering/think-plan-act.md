@@ -31,13 +31,7 @@ Do not present five options. Two or three, with a recommendation. The human refi
 
 ## 3. Act: Surgical, Verifiable Changes
 
-### Minimal Diffs
-
-Every changed line must connect directly to what was asked. The tests for a clean diff:
-
-- Can you justify each changed line with a direct link to the task? If not, revert it.
-- Did you touch code you weren't asked to touch? Leave it. Pre-existing issues are not your problem unless explicitly requested.
-- Did you reformat, reorder imports, rename unrelated variables, or "improve" neighboring code? Revert it. Reformatting hides real changes in review.
+Every changed line must earn its place in the diff. See `clean-code.md` → `Diff Budget` for the principle and the three checks that close out a change.
 
 ### Match Existing Style
 
@@ -52,6 +46,8 @@ If your change makes an import, variable, or function unused, remove it. If it w
 The difference between code that works and code you think works is execution.
 
 - **Bug fixes:** Write a failing test first. Fix the bug. Watch the test pass. This proves you fixed the cause, not the symptom.
+- **Expected values:** Derive expected test values from the requirement, not from running the code. An expected value produced by the implementation encodes its bugs and passes anyway.
+- **Assertion target:** Assert on what a caller can observe, not on internal state. A test that must change when the implementation changes is testing past the interface.
 - **New behavior:** Run existing tests before and after your change. If something broke, your change caused it.
 - **Pre-existing failures:** If tests were already failing, say so explicitly. Don't let your change get blamed.
 - **Untestable code:** If you can't write a test, say why. That's a signal about the architecture, not permission to skip verification.
@@ -85,7 +81,7 @@ Stop and reconsider if you notice yourself doing any of these:
 
 ## Cross-References
 
-- Simplicity, dependency ladder, code quality → `clean-code.md`
+- Diff budget, simplicity, dependency ladder, code quality → `clean-code.md`
 - Human decision authority, asking vs. assuming → `human-in-the-loop.md`
 - Security-specific verification and error handling → `security-sensitive-code.md`
 - Communication style for explanations → `writing-tone-and-style.md`
