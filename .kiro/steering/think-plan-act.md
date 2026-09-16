@@ -31,7 +31,13 @@ Do not present five options. Two or three, with a recommendation. The human refi
 
 ## 3. Act: Surgical, Verifiable Changes
 
-Every changed line must earn its place in the diff. See `clean-code.md` → `Diff Budget` for the principle and the three checks that close out a change.
+Every changed line must be justified by the task. See `clean-code.md` → `Diff Budget` for the principle and the three checks that close out a change.
+
+### Tracer Bullet First
+
+Build the thinnest path that runs end-to-end before completing any part of it. One route from entry point to result, hardcoding what you have not built yet, so there is a running system to review.
+
+A tracer bullet is real code on the real path, kept narrow — it becomes the first commit, and you thicken it once the path is confirmed right. Stop there and hand it back on multi-file or new-pattern work: a running skeleton is cheaper to redirect than a finished implementation.
 
 ### Match Existing Style
 
@@ -72,6 +78,7 @@ Stop and reconsider if you notice yourself doing any of these:
 | Pattern | Signal | Corrective |
 |---------|--------|------------|
 | Kitchen Sink | Changing files unrelated to the task | Revert. Do the one thing asked. |
+| Layer-First Build | Completing one layer before any path runs | Cut back to a tracer bullet. Confirm the path, then thicken. |
 | Invisible Decision | Making an architectural choice without flagging it | Surface it. Hard-to-reverse choices need human buy-in. |
 | Knowledge Hallucination | Using an API, parameter, or method you haven't verified exists | Check the source or docs. If uncertain, say so. |
 | Runaway Refactor | A fix cascading across 5+ files | Stop. Explain the cascade. Get buy-in before continuing. |

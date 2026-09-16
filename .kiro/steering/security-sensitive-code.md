@@ -41,6 +41,7 @@ The "minimum code" principle from clean-code.md does NOT apply to:
 - Redundant validation at trust boundaries
 - Protocol conformance steps that prevent future misuse
 - Exhaustive enum/switch handling even when one branch is currently reachable
+- Tracer bullets in security paths — the narrow path still enforces its own invariants, or it does not merge
 
 ## Patch Review
 

@@ -28,9 +28,9 @@ Implement only what the current task requires. Each rung you descend spends more
 3. Native platform feature? → use it
 4. Already in this codebase, or an installed dependency? → use it
 5. One line? → one line
-6. Only then: minimum code that works
+6. Only then: a tracer bullet — the least code that runs end-to-end
 
-No abstractions without a second consumer you can name (a test double counts). Apply the deletion test before adding a module: if deleting it would make complexity vanish, it was a pass-through; if the complexity would reappear across its callers, it was earning its keep. No boilerplate "for later." No new dependency if existing tools cover it. Before creating a file, check whether convention already maps this change to an existing one — a change to `src/foo.c` belongs in `tests/foo_test.c`, and `utils.ts` already owns what `utils2.ts` would.
+No abstractions without a second consumer you can name (a test double counts). Apply the deletion test before adding a module: if deleting it would make complexity vanish, it was a pass-through; if the complexity would reappear across its callers, the module was absorbing it. No boilerplate "for later." No new dependency if existing tools cover it. Before creating a file, check whether convention already maps this change to an existing one — a change to `src/foo.c` belongs in `tests/foo_test.c`, and `utils.ts` already owns what `utils2.ts` would.
 
 Don't solve problems you don't have yet. Code for today's requirements. If a future need arises, refactor then — it's cheaper than maintaining speculative abstractions now.
 
@@ -47,17 +47,9 @@ Don't solve problems you don't have yet. Code for today's requirements. If a fut
 
 ## Comments
 
-Comments explain **why**. One line inline, two at most. Links — URLs, ticket IDs, spec sections — don't count against that budget; include them whenever they point at the originating requirement.
+Comments explain **why**. One line inline, two at most; links (URLs, ticket IDs, spec sections) are free when they point at the originating requirement. A surviving comment is **diegetic** — it explains the code from inside the program's world, never narrating how the code was written ("now we loop through"), comparing to a version the reader never saw ("cleaner than before"), or addressing a reviewer. It never restates what the code says: if a reader needs a comment to know *what* a thing is, fix the name. The same comment at three or more sites is that smell at scale — move its meaning to the one place those sites reference. State what is true now, or delete the line.
 
-Restating the signature earns nothing. `export function` already says public; the type already says the type. If a reader needs a comment to understand *what* a thing is, fix the name. The same comment repeated at three or more sites is the same smell at scale: either it restates what the code already says, or the meaning it carries belongs in one place — the shared function, enum, or header those sites already reference — with the sites pointing there instead.
-
-Comment the code in front of you. A claim about another file is **hearsay**: it goes stale the moment someone edits that file, and then it lies silently. Prefer leaving it out; when the coupling genuinely matters, one line plus a link. A claim about another **repo** needs explicit authorization — stop and ask first. You cannot see that repo's tests, so you cannot know when your claim stops being true.
-
-Doc comments (`/** */`, docstrings, `///`) may run multiple lines. They state the contract a caller needs: behavior, parameters, returns, errors, constraints. Rationale aimed at future maintainers goes in the commit message or the linked ticket, not the doc block.
-
-A multi-line inline comment is a smell. The exception is a genuinely critical requirement at that line — most often security rationale or a spec reference.
-
-When behavior changes, the comments and tests describing it change in the same diff.
+Multiple lines are earned in two cases: **doc comments** (`/** */`, docstrings, `///`) stating a caller's contract — behavior, parameters, returns, errors, constraints (rationale goes in the commit or ticket, not the block) — and a **critical requirement**, usually security or a spec reference, at the line it governs. Otherwise a multi-line inline comment is a smell. Comment the code in front of you: a claim about another file is **hearsay** that goes stale silently, so prefer a link; a claim about another repo needs authorization — ask first. When behavior changes, its comments and tests change in the same diff.
 
 ## Related
 
