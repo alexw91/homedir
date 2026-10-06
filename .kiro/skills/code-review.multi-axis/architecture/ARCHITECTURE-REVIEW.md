@@ -20,7 +20,7 @@ The Findings Catalog is not exhaustive. If you identify a structural concern tha
 
 ### Module Depth and Placement
 
-1. `shallow:` - **Is this module earning its keep?** A module whose interface is nearly as complex as its implementation — callers must know almost everything about the internals to use it correctly. Apply the deletion test: if you deleted this module, would complexity concentrate in one place (bad — the module was shallow wrapper) or would it reappear across N callers (good — the module was absorbing real complexity)? Also applies when a function is extracted purely for testability but the real bugs live in how it's called, not in the logic itself (no locality). The fix is either deepening the module (absorbing more behind the interface) or inlining it into the caller if the abstraction isn't paying for itself. Verdict ≥ 8: `NEEDS DISCUSSION`.
+1. `shallow:` - **Does this module absorb complexity?** A module whose interface is nearly as complex as its implementation — callers must know almost everything about the internals to use it correctly. Apply the deletion test: if you deleted this module, would complexity concentrate in one place (bad — the module was shallow wrapper) or would it reappear across N callers (good — the module was absorbing real complexity)? Also applies when a function is extracted purely for testability but the real bugs live in how it's called, not in the logic itself (no locality). The fix is either deepening the module (absorbing more behind the interface) or inlining it into the caller if the abstraction isn't paying for itself. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
 2. `misplaced:` - **Is this code in the right file/module?** Logic that lives in a module where it doesn't belong by cohesion or responsibility. Signals: the function's imports come entirely from a different module, callers are all in a different package, or the name of the containing file doesn't describe what this function does. Also applies when new logic is added to a god-module when a better-named home exists or should be created. The fix is moving the code to where it belongs. Verdict ≥ 8: `NEEDS DISCUSSION`.
 
@@ -137,7 +137,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 
 - Only flag structural problems introduced or worsened by the diff. Pre-existing architecture issues in untouched code are out of scope.
 - Every finding MUST name a concrete future problem. "Violates SRP" is not a finding. "Adding a new payment method requires editing the order validation logic because HTTP parsing, validation, and persistence are interleaved in one class" is.
-- Apply the deletion test before flagging `shallow:`. Imagine deleting the module. If complexity reappears across N callers, the module is earning its keep — don't flag it.
+- Apply the deletion test before flagging `shallow:`. Imagine deleting the module. If complexity reappears across N callers, the module is absorbing it — don't flag it.
 - Apply the two-adapter test before flagging `missing-seam:`. If you can't name the second implementation (production + test counts), the coupling is appropriate.
 - Do NOT flag composition roots, main functions, or DI wiring for depending on concrete types. That's their job.
 - Do NOT flag exhaustive pattern matching on security-sensitive enums as `extension-hostile:`. Those belong to the Security axis's defense-in-depth rule.
@@ -149,7 +149,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 Overlap between axes is acceptable and expected. Multiple axes reporting the same issue from different lenses is a stronger signal, not a problem. The orchestrator does not deduplicate across axes.
 
 - **vs Quality:** A structural problem might also be flagged by Quality as `tight-coupling:` or `disproportionate:`. Architecture frames it as "where should the boundary live?"; Quality frames it as "is this the right engineering approach?" Both are valid.
-- **vs Clean:** An unused abstraction might be flagged by Clean as `yagni:` (delete it) and by Architecture as `premature-seam:` (the indirection isn't earning its keep). Both reinforce the same conclusion from different angles.
+- **vs Clean:** An unused abstraction might be flagged by Clean as `yagni:` (delete it) and by Architecture as `premature-seam:` (the indirection absorbs nothing). Both reinforce the same conclusion from different angles.
 - **vs Security:** Exhaustive enum matching in security-critical code is defense-in-depth from Security's perspective. If it also looks like `extension-hostile:` from Architecture's perspective, both can flag it — Architecture should note the security rationale if visible.
 - **vs Style:** File naming conventions belong to Style. Whether code is in the *right* file belongs here. Both can flag a misnamed file that's also in the wrong location.
 - **vs Performance:** A missing batch API might be flagged by both Architecture (structural seam needed) and Performance (N+1 calls). Both perspectives are valuable.

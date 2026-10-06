@@ -16,7 +16,7 @@ The orchestrator passes ONLY information that exists in its memory and is not st
 
 - `[HUMAN]` — the original user message(s) that initiated this work
 - `[AGENT CONTEXT]` — session decisions, clarifications, or constraints from the conversation
-- User-provided URLs mentioned verbally (not found in commit messages or CR descriptions)
+- User-provided URLs mentioned verbally (not found in commit messages or PR descriptions)
 
 If none of these exist, this section is empty and that's fine.
 
@@ -72,7 +72,7 @@ Sub-agents discover their own axis-specific context from the filesystem and git 
 |---|---|
 | Convention/style files | `.kiro/steering/*.md`, `CONTRIBUTING.md`, `STYLE.md`, `.editorconfig`, linter configs |
 | Requirements / PRD | `docs/`, `specs/`, `.kiro/specs/`, issue links in commit messages |
-| Issue/ticket references | `git -P log @{upstream}..HEAD` — look for `#123`, `Closes #`, SIM links, Taskei links |
+| Issue/ticket references | `git -P log @{upstream}..HEAD` — look for `#123`, `Closes #`, `Fixes #`, issue tracker URLs |
 | Type definitions / interfaces | Adjacent to changed files (use `--name-only` to find changed files, then explore) |
 | Background context | `background-context.md` in repo root if it exists |
 
@@ -82,39 +82,31 @@ Each axis sub-skill specifies what context is relevant. Discover it yourself.
 
 ## Remote Mode Input
 
-In remote mode, you are reviewing an existing CR/PR hosted on code.amazon.com or GitHub. There is NO local git repository. You MUST NOT run git commands.
+In remote mode, you are reviewing an existing pull request hosted on GitHub. There is NO local git repository. You MUST NOT run git commands.
 
 ### Diff content (inline)
 
 The orchestrator provides the full unified diff directly in your prompt. This is the changeset under review — you do not need to fetch it.
 
-### CR/PR metadata
+### PR metadata
 
-The orchestrator provides metadata from the review platform:
-- **Title** — the CR/PR title (equivalent to a commit message subject)
-- **Description** — the CR/PR description body
-- **Linked issues** — any tickets, SIM links, or issue references extracted from the CR/PR
+The orchestrator provides metadata from GitHub:
+- **Title** — the PR title (equivalent to a commit message subject)
+- **Description** — the PR description body
+- **Linked issues** — any issue references extracted from the PR
 
 These serve the same role that commit messages and issue links serve in local mode.
 
 ### Platform context
 
-The orchestrator tells you which platform you're on:
-- Platform: `CRUX` or `GitHub`
-- Repository/package name
+The orchestrator provides:
+- Repository owner and name
 - Base branch
 
 ### How to access code (remote mode)
 
 If you need to read a file beyond what's in the diff (for surrounding context, callers, type definitions):
 
-**CRUX:**
-```
-mcp_builder_mcp_readinternalwebsites with URL:
-code.amazon.com/packages/<REPO>/blobs/<BRANCH>/--/<PATH>
-```
-
-**GitHub:**
 ```
 mcp_github_get_file_contents with:
 owner=<owner>, repo=<repo>, path=<path>, ref=<base-branch>
@@ -124,14 +116,14 @@ Use these sparingly — the diff should contain enough for most findings. Fetch 
 
 ### Context discovery in remote mode
 
-You do NOT have filesystem access. Convention files, linter configs, and requirements docs can only be accessed via the platform-specific file-read recipe above. Check for them the same way you would in local mode, but using the API instead of filesystem commands.
+You do NOT have filesystem access. Convention files, linter configs, and requirements docs can only be accessed via the file-read recipe above. Check for them the same way you would in local mode, but using the API instead of filesystem commands.
 
 ---
 
 ## Rules for sub-agents
 
 1. **Local mode: Run the diff command yourself.** The orchestrator does not pass diff content inline.
-2. **Remote mode: Diff is provided inline.** Do NOT run git commands — there is no local clone. Use the platform-specific "read file" recipe if you need surrounding context.
+2. **Remote mode: Diff is provided inline.** Do NOT run git commands — there is no local clone. Use the "read file" recipe if you need surrounding context.
 3. **Be selective.** You don't have to load the entire diff if your axis only needs to inspect specific commits or files. In local mode, use `--name-only` first to triage.
 4. **Use `-P` on all git commands (local mode only).** This prevents pagination from blocking execution.
 5. **Do not modify the repository.** Read-only operations only. No commits, no checkouts, no stashes.

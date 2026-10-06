@@ -1,6 +1,6 @@
 ---
 name: code-review.multi-axis
-description: Multi-axis code review to find issues across coding style, requirements adherence, security review, code minimality, software engineering quality, architecture, performance, test quality, backwards compatibility, and readiness for human review. Use when user says "review since", "code-review.multi-axis", "code review", "pre-CR check", or wants feedback on changes before submitting.
+description: Multi-axis code review to find issues across coding style, requirements adherence, security review, code minimality, software engineering quality, architecture, performance, test quality, backwards compatibility, and readiness for human review. Use when user says "review since", "code-review.multi-axis", "code review", "pre-PR check", or wants feedback on changes before submitting.
 ---
 
 # Multi-Axis Code Review
@@ -29,7 +29,7 @@ This skill operates in two modes depending on the input:
 
 **Local mode** — reviewing your own unpushed work in a local git repo. The orchestrator passes sub-agents a git command to run; sub-agents fetch the diff themselves and have full filesystem access for surrounding context. This is the default when no URL is provided.
 
-**Remote mode** — reviewing an existing CR/PR on code.amazon.com or GitHub. The orchestrator fetches the diff once via platform API and passes it inline to sub-agents. Sub-agents cannot run git commands (no local clone exists) but receive a recipe for fetching additional files via the platform API if needed.
+**Remote mode** — reviewing an existing GitHub pull request. The orchestrator fetches the diff once via platform API and passes it inline to sub-agents. Sub-agents cannot run git commands (no local clone exists) but receive a recipe for fetching additional files via the platform API if needed.
 
 The key difference: in local mode, sub-agents are self-sufficient and the orchestrator stays lean. In remote mode, the orchestrator does more upfront work (one API fetch) to avoid N sub-agents each throttling the same remote API.
 
@@ -51,7 +51,6 @@ This keeps the orchestrator's context lean and allows the skill to scale to many
 
 ### 1. Detect mode
 
-- Input is a `CR-XXXXXXXX` ID or `code.amazon.com/reviews/...` URL → **remote (CRUX)**
 - Input is a GitHub PR URL (`github.com/<owner>/<repo>/pull/<N>`) → **remote (GitHub)**
 - Input is a git ref, `since <ref>`, or no input (default) → **local**
 
@@ -72,10 +71,6 @@ This keeps the orchestrator's context lean and allows the skill to scale to many
   ```
 - If uncommitted changes exist, append `(uncommitted) Working tree changes not yet committed` to the commit list.
 - Determine the diff command sub-agents will run: `git -P diff @{upstream}` (or `git -P diff <ref>`).
-
-**Remote (CRUX):**
-- Fetch the CR using `mcp_builder_mcp_readinternalwebsites` with the CR URL (include `?diffConfig=all`).
-- Extract: diff content, file list, CR title, CR description, linked issues.
 
 **Remote (GitHub):**
 - Fetch the diff using `mcp_github_pull_request_read` with method `get_diff`.
@@ -113,11 +108,9 @@ Use `invoke_sub_agent` with `general-task-execution` for each axis. Provide each
 
 **Remote mode additionally:**
 - The diff content inline (fetched in step 2)
-- Platform context: which platform (CRUX or GitHub), repo/package name, base branch
-- A "read file" recipe for fetching surrounding context:
-  - CRUX: `mcp_builder_mcp_readinternalwebsites` with `code.amazon.com/packages/<REPO>/blobs/<BRANCH>/--/<PATH>`
-  - GitHub: `mcp_github_get_file_contents` with `owner`, `repo`, `path`, `ref`
-- CR/PR metadata: title, description, linked issues
+- Platform context: owner, repo name, base branch
+- A "read file" recipe for fetching surrounding context: `mcp_github_get_file_contents` with `owner`, `repo`, `path`, `ref`
+- PR metadata: title, description, linked issues
 
 Sub-agent skill files by axis:
 - `style/STYLE-REVIEW.md`
@@ -137,7 +130,7 @@ All sub-agents MUST return output conforming to `OUTPUT-CONTRACT.md`.
 
 **Report header:**
 - Local: `## Review: <fixed-point>..HEAD (<N> commits, <M> files)`
-- Remote: `## Review: CR-12345678 (<N> files)` or `## Review: github.com/aws/s2n-tls/pull/4567 (<N> files)`
+- Remote: `## Review: github.com/aws/s2n-tls/pull/4567 (<N> files)`
 
 **Output format:**
 

@@ -12,13 +12,13 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 **Local mode:** Run the diff command to get the changes. Identify production code files and test code files. For production code without corresponding tests in the diff, use filesystem access to check whether tests exist in the expected location (following the project's naming conventions). Read existing test files when needed to assess duplication or staleness.
 
-**Remote mode:** The diff is provided inline. Identify production code vs test code from file paths. Use the platform-specific file-read recipe to check for existing test files when assessing `missing-test:` or `duplicate-test:` findings.
+**Remote mode:** The diff is provided inline. Identify production code vs test code from file paths. Use the file-read recipe to check for existing test files when assessing `missing-test:` or `duplicate-test:` findings.
 
 ## Findings Catalog
 
 The Findings Catalog is not exhaustive. If you identify a concern that answers the Core Question but doesn't match any numbered item, report it using a descriptive ad-hoc tag of your choosing suffixed with `(new)` (e.g., `flaky-setup (new):`, `test-pollution (new):`). The same output format, confidence scoring, and verdict rules apply.
 
-1. `missing-test:` - **Is there a test for this new code?** Production code was added or modified in this diff but no corresponding test code appears. Every new function, branch, or behavior change should have a test that exercises it. Assume this diff targets a production-ready CR — if tests are planned for a follow-up, they should be in this diff instead. In local mode, check whether existing test files already cover the new code before flagging. Verdict ≥ 8: `FIX REQUIRED`.
+1. `missing-test:` - **Is there a test for this new code?** Production code was added or modified in this diff but no corresponding test code appears. Every new function, branch, or behavior change should have a test that exercises it. Assume this diff targets a production-ready PR — if tests are planned for a follow-up, they should be in this diff instead. In local mode, check whether existing test files already cover the new code before flagging. Verdict ≥ 8: `FIX REQUIRED`.
 
 2. `missing-error-test:` - **Is there a test that violates this precondition?** A new validation check, precondition guard, error return, or early-exit path was added but no test exercises the failure case. Every precondition should have a test that deliberately violates it and asserts the expected error behavior. Verdict ≥ 8: `FIX REQUIRED`.
 
@@ -86,7 +86,7 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 ## Rules
 
 - In local mode, always check for existing test files before flagging `missing-test:`. Use the project's naming convention (e.g., `src/foo.ts` → `src/__tests__/foo.test.ts`, or `src/foo.c` → `tst/foo_test.c`). Only flag if no test file exists OR the existing test file has no assertions covering the new code path.
-- In remote mode, use the platform file-read recipe to check for existing tests when confidence would otherwise be below 9. If you cannot verify, flag at confidence 8 with a note that existing coverage wasn't verified.
+- In remote mode, use the file-read recipe to check for existing tests when confidence would otherwise be below 9. If you cannot verify, flag at confidence 8 with a note that existing coverage wasn't verified.
 - Read both the production code and the test code in the diff holistically. Understand what the production code does, then assess whether the tests actually prove it works.
 - For `no-gate:` and `tautological:`: mentally remove the production code change and ask "would this test still pass?" If yes, it's not gating.
 - Do NOT flag test infrastructure (helpers, fixtures, factories) as needing their own tests. Test infrastructure is tested by the tests that use it. Exception: complex detection harnesses (sanitizers, fuzz targets, custom lint rules) that could silently fail to detect — these are covered by `missing-harness-canary:`.

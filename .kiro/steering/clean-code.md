@@ -7,7 +7,7 @@ inclusion: always
 
 ## Diff Budget
 
-A human reads every line you write, and their attention is the scarce resource — not your time, not the line count. Review cost scales faster than diff size: a ten-line CR merges in minutes, a hundred-line CR merges tomorrow, a thousand-line CR gets rubber-stamped or stuck for weeks. A diff too large to review ships unreviewed.
+A human reads every line you write, and their attention is the scarce resource — not your time, not the line count. Review cost scales faster than diff size: a ten-line PR merges in minutes, a hundred-line PR merges tomorrow, a thousand-line PR gets rubber-stamped or stuck for weeks. A diff too large to review ships unreviewed.
 
 So the first question on a change is not "does this work" but "what is the smallest diff that works." Every line spends budget, and every line must earn it: you can name the requirement it serves, or you revert it. When you finish, re-read the diff as the reviewer will — top to bottom, with no memory of how it got that way.
 

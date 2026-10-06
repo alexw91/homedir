@@ -4,7 +4,7 @@ Review the changeset as if you are a fresh human reviewer opening a code review.
 
 ## Core Question
 
-**"If a human reviewer sees only what's in this CR, will anything confuse them or send them hunting for something that doesn't exist?"**
+**"If a human reviewer sees only what's in this PR, will anything confuse them or send them hunting for something that doesn't exist?"**
 
 ## Input
 
@@ -12,7 +12,7 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 **Local mode:** Use `git -P show <sha>` for any committed change, and `git -P diff HEAD` for uncommitted changes. Focus on commits where the subject line or changed files suggest potential issues.
 
-**Remote mode:** The diff is provided inline in your prompt. CR/PR metadata (title, description) serves the same role as commit messages. Use the platform-specific file-read recipe if you need surrounding context.
+**Remote mode:** The diff is provided inline in your prompt. PR metadata (title, description) serves the same role as commit messages. Use the file-read recipe if you need surrounding context.
 
 ## Findings Catalog
 
@@ -20,7 +20,7 @@ The Findings Catalog is not exhaustive. If you identify a concern that answers t
 
 1. `abandoned-ref:` - **Does this reference something from the development process that isn't in the final changeset?** Comments that reference approaches not taken ("Replaced from X", "Previously tried Y", "Unlike the old approach…"). These are diary entries for the author, not documentation for the reader. The final code should stand alone without explaining its own development history. Remove it. Verdict ≥ 8: `FIX REQUIRED`.
 
-2. `wip:` - **Is this unfinished work?** TODO/FIXME markers, `console.log`/`printf` debug statements, commented-out code from earlier experiments, placeholder implementations (functions that return hardcoded values with a note to "implement later"). These signal the work isn't finished. Either finish the work or remove the marker. Exception: intentional scope-limiting TODOs ("TODO(next-CR): add pagination") are communication to the reviewer, not WIP debris. Verdict ≥ 8: `FIX REQUIRED`.
+2. `wip:` - **Is this unfinished work?** TODO/FIXME markers, `console.log`/`printf` debug statements, commented-out code from earlier experiments, placeholder implementations (functions that return hardcoded values with a note to "implement later"). These signal the work isn't finished. Either finish the work or remove the marker. Exception: intentional scope-limiting TODOs ("TODO(next-PR): add pagination") are communication to the reviewer, not WIP debris. Verdict ≥ 8: `FIX REQUIRED`.
 
 3. `message-mismatch:` - **Does the commit message match the code?** A commit message that mentions a concept, ticket, branch, or approach that isn't visible in the diff, or claims the code does X but the diff actually does Y. The reviewer will read the message first, form an expectation, then be confused when the code doesn't match. Rewrite the message to describe what the code actually does. Verdict ≥ 8: `FIX REQUIRED`.
 
@@ -70,10 +70,10 @@ See `OUTPUT-CONTRACT.md` for the generic 1-10 scale. For this axis:
 
 - **Local mode:** Run `git -P show <sha>` for any commit where the subject line raises suspicion (vague messages like "WIP", "fixup", "cleanup"; messages that mention concepts you want to verify are present in the diff).
 - **Local mode:** Run `git -P diff HEAD` to inspect uncommitted changes — these are the most likely to contain WIP remnants since they haven't been intentionally committed yet.
-- **Remote mode:** Work from the inline diff and CR/PR metadata provided. Use the platform file-read recipe for surrounding context if needed.
-- Do NOT flag legitimate external references (RFCs, well-known library documentation, issue tracker links that are standard CR metadata).
-- Do NOT flag TODO comments that are clearly intentional scope-limiting ("TODO(next-CR): add pagination") — these are communication to the reviewer, not WIP debris. Flag only TODOs that look like forgotten work.
-- Do NOT flag commit messages that reference the issue being solved (e.g., "Fixes #123") — these are standard CR metadata.
+- **Remote mode:** Work from the inline diff and PR metadata provided. Use the file-read recipe for surrounding context if needed.
+- Do NOT flag legitimate external references (RFCs, well-known library documentation, issue tracker links that are standard PR metadata).
+- Do NOT flag TODO comments that are clearly intentional scope-limiting ("TODO(next-PR): add pagination") — these are communication to the reviewer, not WIP debris. Flag only TODOs that look like forgotten work.
+- Do NOT flag commit messages that reference the issue being solved (e.g., "Fixes #123") — these are standard PR metadata.
 - The test for every finding: "Would a fresh reviewer reading only this diff be confused by this, or would they go looking for something that doesn't exist here?"
 
 ## Boundaries

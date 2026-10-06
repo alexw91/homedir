@@ -7,6 +7,8 @@ inclusion: always
 
 Write for an audience that spans non-technical executive leadership to extremely technical distinguished engineers. Both should find the document clear on first read — executives without needing implementation details, engineers without feeling talked down to.
 
+All writing defaults to diegetic: each artifact stands on its own, speaks from inside its genre and world, and remains independent of its drafting history, authoring session, and private workspace context. Apply `/diegetic` before delivery to remove drafting history, LLM-session residue, and inaccessible local context.
+
 ## Principles
 
 1. Conclusions first, then evidence. Lead with the answer; support it below.
@@ -33,7 +35,8 @@ Write for an audience that spans non-technical executive leadership to extremely
 22. Use the same word for the same thing throughout a document. If you call it "listener" in one paragraph, don't call it "endpoint" in the next unless you mean something different.
 23. If a pronoun could refer to two nouns, use the noun again. "The policy updates the listener. It then restarts" — which restarts? Name it.
 24. Write as though this is the only version. A document must not narrate its own development — no references to earlier drafts, no corrections of claims the reader never saw, no accounts of abandoned approaches. History of the *work* can be evidence: a failed run that proves the tooling fails safe belongs in a methodology section. History of the *document* never is.
-25. Break any of these rules sooner than write like a machine.
+25. Establish the shared model before proposing a change to a system you don't own. Open with a brief overview of how that system works today so the owning team can verify it matches reality before weighing the change. Alignment on how the system works is the prerequisite for alignment on the change.
+26. Break any of these rules sooner than write like a machine.
 
 ## Structure
 
@@ -43,6 +46,7 @@ Write for an audience that spans non-technical executive leadership to extremely
 - Number multi-step sequences. Readers lose their place in narrative procedures. A numbered list lets them resume after an interruption.
 - Order sections so the argument moves. Swap two non-adjacent sections; if nothing breaks, the document is a stack of interchangeable blocks, not a line of reasoning.
 - Let section length follow content. Uniform section depth, and a recap sentence closing every section, are signs the shape was filled in rather than written.
+- For a change to another team's system, the how-it-works-today overview comes first — see Principle 25. This is the sole exception to background-follows-ask.
 
 ## Formatting
 

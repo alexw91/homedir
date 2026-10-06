@@ -12,7 +12,7 @@ Refer to `INPUT-CONTRACT.md` for the standard input you receive (diff command or
 
 **Local mode:** Use `git -P show <sha>` to inspect committed changes and `git -P diff HEAD` to inspect uncommitted changes. Focus on hunks where line count or abstraction depth raises suspicion.
 
-**Remote mode:** The diff is provided inline in your prompt. Work from the inline diff and CR/PR metadata provided.
+**Remote mode:** The diff is provided inline in your prompt. Work from the inline diff and PR metadata provided.
 
 ## Findings Catalog
 
